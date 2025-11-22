@@ -21,4 +21,10 @@ urlpatterns = [
     path('cliente/pedidos/crear/', views.pedido_create, name='pedido_create'),
     path('cliente/pedidos/<int:pk>/editar/', views.pedido_edit, name='pedido_edit'),
     path('cliente/pedidos/<int:pk>/eliminar/', views.pedido_delete, name='pedido_delete'),
+
+    # *** Nueva ruta para ver el detalle del plato ***
+    path('plato/<int:id>/', views.plato_detalle, name='plato_detalle'),
+    path('pedido/rapido/<int:pk>/', views.pedido_rapido, name='pedido_rapido'),
+
+
 ]

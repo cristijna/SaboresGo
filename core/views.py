@@ -166,3 +166,35 @@ def pedido_delete(request, pk):
 def proveedores(request):
     proveedores = Proveedor.objects.filter(aprobado=True)
     return render(request, 'core/proveedores.html', {'proveedores': proveedores})
+
+def plato_detalle(request, pk):
+    plato = get_object_or_404(Plato, pk=pk)
+    return render(request, 'core/cliente/plato_detalle.html', {'plato': plato})
+
+@login_required
+def pedido_rapido(request, pk):
+    plato = get_object_or_404(Plato, pk=pk)
+
+    if request.method == 'POST':
+        cantidad = int(request.POST.get('cantidad', 1))
+
+        Pedido.objects.create(
+            cliente=request.user,
+            plato=plato,
+            cantidad=cantidad,
+            estado='pendiente',
+            direccion="",       
+            confirmado=False
+        )
+
+        messages.success(request, 'Plato añadido al carrito.')
+        return redirect('core:pedido_list')
+
+    return redirect('core:plato_detalle', pk=pk)
+
+from django.shortcuts import render, get_object_or_404
+from .models import Plato
+
+def plato_detalle(request, id):
+    plato = get_object_or_404(Plato, id=id)
+    return render(request, 'core/plato_detalle.html', {'plato': plato})

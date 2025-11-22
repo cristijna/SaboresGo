@@ -15,17 +15,24 @@ class Proveedor(models.Model):
         return self.empresa if self.empresa else self.user.username
 
 
+class Ingrediente(models.Model):
+    nombre = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.nombre
+    
 class Plato(models.Model):
     proveedor = models.ForeignKey(Proveedor, on_delete=models.CASCADE, related_name='platos')
     nombre = models.CharField(max_length=150)
     descripcion = models.TextField(blank=True)
+    ingredientes = models.CharField(max_length=500)  # o TextField  # <-- CORPORATIVO
     precio = models.DecimalField(max_digits=8, decimal_places=2)
     imagen = models.ImageField(upload_to='platos/', blank=True, null=True)
     creado_en = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f'{self.nombre} - {self.proveedor.empresa}'
+
 
 ESTADO_PEDIDO = (
     ('pendiente', 'Pendiente'),
@@ -42,3 +49,5 @@ class Pedido(models.Model):
     direccion = models.CharField(max_length=255, blank=True)
     confirmado = models.BooleanField(default=False)
     fecha_pedido = models.DateTimeField(auto_now_add=True)
+
+

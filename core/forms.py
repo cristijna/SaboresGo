@@ -23,9 +23,27 @@ class ProveedorProfileForm(forms.ModelForm):
         fields = ['empresa', 'descripcion', 'logo']
 
 class PlatoForm(forms.ModelForm):
+    ingredientes = forms.CharField(
+        widget=forms.Textarea(
+            attrs={
+                'rows': 3,
+                'placeholder': 'Ingrese los ingredientes separado por coma.',
+                'class': 'form-control'
+            }
+        ),
+        help_text="Ingrese los ingredientes separados por coma."
+    )
+
     class Meta:
         model = Plato
-        fields = ['nombre', 'descripcion', 'precio', 'imagen']
+        fields = ['nombre', 'descripcion', 'ingredientes', 'precio', 'imagen']
+
+    def clean_ingredientes(self):
+        data = self.cleaned_data['ingredientes']
+        # Limpieza corporativa: estandarizar formato
+        return ", ".join([i.strip() for i in data.split(",") if i.strip()])
+
+
 
 class PedidoForm(forms.ModelForm):
     class Meta:

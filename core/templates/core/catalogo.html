@@ -36,35 +36,41 @@
       <div class="platos-grid">
         {% for plato in p.platos.all %}
           <article class="plato-card">
-            <div class="plato-img-container">
-              {% if plato.imagen %}
-                <img src="{{ plato.imagen.url }}" alt="{{ plato.nombre }}" class="plato-img">
-              {% else %}
-                <img src="{% static 'core/img/default-plato.jpg' %}" alt="Sin imagen" class="plato-img">
-              {% endif %}
-            </div>
-            <div class="plato-body">
-              <h3 class="plato-nombre">{{ plato.nombre }}</h3>
-              <p class="plato-descripcion">{{ plato.descripcion|default:"Sin descripción disponible." }}</p>
-              <p class="plato-precio"><strong>${{ plato.precio }}</strong></p>
 
-              {% if user.is_authenticated %}
-                {% if not user.proveedor_profile %}
-                  <form method="post" action="{% url 'core:pedido_create' %}" class="pedido-form">
-                    {% csrf_token %}
-                    <input type="hidden" name="plato" value="{{ plato.id }}">
-                    <input type="number" name="cantidad" value="1" min="1" class="pedido-cantidad">
-                    <button type="submit" class="btn btn-primary">Pedir</button>
-                  </form>
+            <a href="{% url 'core:plato_detalle' plato.id %}" class="plato-link">
+              <div class="plato-img-container">
+                {% if plato.imagen %}
+                  <img src="{{ plato.imagen.url }}" alt="{{ plato.nombre }}" class="plato-img">
+                {% else %}
+                  <img src="{% static 'core/img/default-plato.jpg' %}" alt="Sin imagen" class="plato-img">
                 {% endif %}
-              {% else %}
-                <a href="{% url 'core:login' %}" class="btn btn-outline">Inicia sesión para pedir</a>
+              </div>
+
+              <div class="plato-body">
+                <h3 class="plato-nombre">{{ plato.nombre }}</h3>
+                <p class="plato-descripcion">{{ plato.descripcion|default:"Sin descripción disponible." }}</p>
+                <p class="plato-precio"><strong>${{ plato.precio }}</strong></p>
+              </div>
+            </a>
+
+            {% if user.is_authenticated %}
+              {% if not user.proveedor_profile %}
+                <form method="post" action="{% url 'core:pedido_create' %}" class="pedido-form">
+                  {% csrf_token %}
+                  <input type="hidden" name="plato" value="{{ plato.id }}">
+                  <input type="number" name="cantidad" value="1" min="1" class="pedido-cantidad">
+                  <button type="submit" class="btn btn-primary">Pedir</button>
+                </form>
               {% endif %}
-            </div>
+            {% else %}
+              <a href="{% url 'core:login' %}" class="btn btn-outline">Inicia sesión para pedir</a>
+            {% endif %}
+
           </article>
         {% empty %}
           <p class="sin-platos">No hay platos disponibles para este proveedor.</p>
         {% endfor %}
+      </div>
       </div>
     </section>
   {% empty %}
