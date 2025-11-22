@@ -55,20 +55,23 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'saboresgo.wsgi.application'
 
-# Base de datos
+
 # Base de datos
 DATABASE_URL = os.environ.get("DATABASE_URL")
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'railway',
-        'USER': 'postgres',
-        'PASSWORD': 'IBAVFVmKKdcjkePexThMmmjYOgDFHgDV',
-        'HOST': 'crossover.proxy.rlwy.net',
-        'PORT': '42647',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'saboresdb',
+        'USER': 'root',
+        'PASSWORD': 'admin123',
+        'HOST': 'localhost',
+        'PORT': '3306',
+        'OPTIONS': {
+            'charset': 'utf8mb4',
+        },
     }
 }
+
 # Validación de passwords
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
