@@ -1,122 +1,415 @@
 {% extends "core/base.html" %}
+{% load static %}
+
+{% block title %}Panel de administración{% endblock %}
+
+{% block extra_css %}
+<style>
+  .admin-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    gap: 24px;
+    min-height: calc(100vh - 160px);
+  }
+
+  @media (max-width: 900px) {
+    .admin-layout {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .admin-sidebar {
+    background: #1f2937;
+    border-radius: 16px;
+    padding: 24px 18px;
+    color: #f9fafb;
+  }
+
+  .admin-sidebar h2 {
+    font-size: 1.3rem;
+    margin-bottom: 18px;
+  }
+
+  .admin-nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .admin-nav li {
+    margin-bottom: 8px;
+  }
+
+  .admin-nav a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: #e5e7eb;
+    font-size: 0.95rem;
+  }
+
+  .admin-nav a.active,
+  .admin-nav a:hover {
+    background: #f97316;
+    color: #111827;
+  }
+
+  .admin-main {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .admin-header h1 {
+    font-size: 1.8rem;
+    margin: 0;
+  }
+
+  .admin-subtitle {
+    color: #6b7280;
+    margin: 4px 0 0 0;
+    font-size: 0.95rem;
+  }
+
+  .chip {
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    background: #ecfdf5;
+    color: #166534;
+  }
+
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 16px 18px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.06);
+    border: 1px solid #e5e7eb;
+  }
+
+  .card h3 {
+    margin: 0 0 4px 0;
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+
+  .card .big-number {
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .card .muted {
+    font-size: 0.8rem;
+    color: #9ca3af;
+  }
+
+  .card-row {
+    display: grid;
+    grid-template-columns: 2fr 1.8fr;
+    gap: 16px;
+  }
+
+  @media (max-width: 1050px) {
+    .card-row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .section-title {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+  }
+
+  .section-subtitle {
+    font-size: 0.85rem;
+    color: #9ca3af;
+    margin-bottom: 12px;
+  }
+
+  table.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+
+  table.admin-table th,
+  table.admin-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e5e7eb;
+    text-align: left;
+  }
+
+  table.admin-table th {
+    background: #f9fafb;
+    font-weight: 500;
+    color: #4b5563;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+  }
+
+  .badge-gray { background: #e5e7eb; color: #111827; }
+  .badge-blue { background: #dbeafe; color: #1d4ed8; }
+  .badge-green { background: #dcfce7; color: #166534; }
+  .badge-orange { background: #ffedd5; color: #c2410c; }
+
+  .amount {
+    font-weight: 600;
+  }
+</style>
+{% endblock %}
+
 {% block content %}
+<section class="admin-layout">
+  <!-- 🔹 Sidebar -->
+  <aside class="admin-sidebar">
+    <h2>Panel administrador</h2>
 
-<section style="max-width:1200px; margin:40px auto; background:#fff; padding:30px; border-radius:10px; box-shadow:0 0 15px rgba(0,0,0,0.1);">
-  <h2 style="text-align:center; color:#5b0d0d; margin-bottom:30px;">Panel de Administración</h2>
+    <ul class="admin-nav">
+      <li>
+        <a href="{% url 'adminpanel:dashboard' %}" 
+          class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+          Dashboard
+        </a>
+      </li>
 
-  <!-- 📈 Tarjetas resumen -->
-  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px; margin-bottom:40px;">
-    <div style="background:#facc15; padding:20px; border-radius:10px; text-align:center;">
-      <h3 style="margin:0; font-size:2rem;">{{ total_pedidos }}</h3>
-      <p>Total de Pedidos</p>
-    </div>
-    <div style="background:#3b82f6; color:#fff; padding:20px; border-radius:10px; text-align:center;">
-      <h3 style="margin:0; font-size:2rem;">{{ pedidos_preparando }}</h3>
-      <p>Preparando</p>
-    </div>
-    <div style="background:#f97316; color:#fff; padding:20px; border-radius:10px; text-align:center;">
-      <h3 style="margin:0; font-size:2rem;">{{ pedidos_en_camino }}</h3>
-      <p>En Camino</p>
-    </div>
-    <div style="background:#16a34a; color:#fff; padding:20px; border-radius:10px; text-align:center;">
-      <h3 style="margin:0; font-size:2rem;">{{ pedidos_entregados }}</h3>
-      <p>Entregados</p>
-    </div>
+      <li>
+        <a href="{% url 'adminpanel:clientes_list' %}" 
+          class="{% if request.resolver_match.url_name == 'clientes_list' %}active{% endif %}">
+          Clientes
+        </a>
+      </li>
+
+      <li>
+        <a href="{% url 'adminpanel:pedidos_list' %}" 
+          class="{% if request.resolver_match.url_name == 'pedidos_list' %}active{% endif %}">
+          Pedidos
+        </a>
+      </li>
+
+      <li>
+        <a href="{% url 'adminpanel:proveedores_list' %}" 
+          class="{% if request.resolver_match.url_name == 'proveedores_list' %}active{% endif %}">
+          Proveedores
+        </a>
+      </li>
+    </ul>
+
+  </aside>
+
+  <!-- 🔹 Contenido principal -->
+  <div class="admin-main">
+    <!-- Encabezado -->
+    <header class="admin-header">
+      <div>
+        <h1>Resumen general</h1>
+        <p class="admin-subtitle">
+          Visualiza el rendimiento de Sabores: pedidos, ingresos y actividad reciente.
+        </p>
+      </div>
+      <span class="chip">
+        👑 Administrador: {{ request.user.username }}
+      </span>
+    </header>
+
+    <!-- Métricas principales -->
+    <section class="cards-grid">
+      <article class="card">
+        <h3>Pedidos totales</h3>
+        <p class="big-number">{{ total_pedidos }}</p>
+        <p class="muted">Incluye todos los estados</p>
+      </article>
+
+      <article class="card">
+        <h3>Clientes únicos</h3>
+        <p class="big-number">{{ total_clientes }}</p>
+        <p class="muted">Usuarios que han realizado al menos un pedido</p>
+      </article>
+
+      <article class="card">
+        <h3>Proveedores</h3>
+        <p class="big-number">{{ total_proveedores }}</p>
+        <p class="muted">{{ proveedores_aprobados }} aprobados · {{ proveedores_pendientes }} pendientes</p>
+      </article>
+
+      <article class="card">
+        <h3>Ingresos totales</h3>
+        <p class="big-number">${{ total_ingresos|floatformat:0 }}</p>
+        <p class="muted">Solo pedidos confirmados</p>
+      </article>
+
+      <article class="card">
+        <h3>Ingresos hoy</h3>
+        <p class="big-number">${{ ingresos_hoy|floatformat:0 }}</p>
+        <p class="muted">Pedidos confirmados en el día</p>
+      </article>
+
+      <article class="card">
+        <h3>Ingresos este mes</h3>
+        <p class="big-number">${{ ingresos_mes|floatformat:0 }}</p>
+        <p class="muted">Desde el día 1 del mes actual</p>
+      </article>
+    </section>
+
+    <!-- Filas con tarjetas: estados + gráfico + top platos -->
+    <section class="card-row">
+      <!-- Estados de pedidos -->
+      <article class="card">
+        <h2 class="section-title">Estado de pedidos</h2>
+        <p class="section-subtitle">Distribución actual por estado</p>
+
+        <div class="cards-grid">
+          <div>
+            <h3>Pendientes</h3>
+            <p class="big-number">{{ pedidos_pendientes }}</p>
+          </div>
+          <div>
+            <h3>Preparando</h3>
+            <p class="big-number">{{ pedidos_preparando }}</p>
+          </div>
+          <div>
+            <h3>Entregados</h3>
+            <p class="big-number">{{ pedidos_entregados }}</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Gráfico ventas últimos 7 días -->
+      <article class="card">
+        <h2 class="section-title">Ventas últimos 7 días</h2>
+        <p class="section-subtitle">Monto total por día (pedidos confirmados)</p>
+        <canvas id="ventas7dias"></canvas>
+      </article>
+    </section>
+
+    <!-- Top platos + últimos pedidos -->
+    <section class="card-row">
+      <!-- Top platos -->
+      <article class="card">
+        <h2 class="section-title">Top 5 platos más vendidos</h2>
+        <p class="section-subtitle">Según cantidad total pedida</p>
+
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Plato</th>
+              <th>Cantidad total</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for p in top_platos %}
+            <tr>
+              <td>{{ forloop.counter }}</td>
+              <td>{{ p.plato__nombre }}</td>
+              <td>{{ p.total_cantidad }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="3">Sin información suficiente todavía.</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </article>
+
+      <!-- Últimos pedidos -->
+      <article class="card">
+        <h2 class="section-title">Últimos pedidos</h2>
+        <p class="section-subtitle">Actividad reciente en la plataforma</p>
+
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>Plato</th>
+              <th>Proveedor</th>
+              <th>Estado</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for p in ultimos_pedidos %}
+            <tr>
+              <td>{{ p.cliente.username }}</td>
+              <td>{{ p.plato.nombre }}</td>
+              <td>{{ p.plato.proveedor.empresa }}</td>
+              <td>
+                {% if p.estado == 'pendiente' %}
+                  <span class="badge badge-gray">Pendiente</span>
+                {% elif p.estado == 'preparando' %}
+                  <span class="badge badge-blue">Preparando</span>
+                {% elif p.estado == 'entregado' %}
+                  <span class="badge badge-green">Entregado</span>
+                {% else %}
+                  <span class="badge badge-orange">{{ p.estado }}</span>
+                {% endif %}
+              </td>
+              <td>{{ p.fecha_pedido|date:"d/m/Y H:i" }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5">No hay pedidos recientes.</td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </article>
+    </section>
   </div>
-
-  <!-- 👥 Tarjetas de proveedores -->
-  <div style="display:flex; gap:20px; justify-content:center; margin-bottom:40px; flex-wrap:wrap;">
-    <div style="background:#5b0d0d; color:white; padding:20px; border-radius:10px; min-width:220px; text-align:center;">
-      <h3 style="margin:0; font-size:2rem;">{{ total_proveedores }}</h3>
-      <p>Total de Proveedores</p>
-    </div>
-    <div style="background:#e3c178; color:#000; padding:20px; border-radius:10px; min-width:220px; text-align:center;">
-      <h3 style="margin:0; font-size:2rem;">{{ proveedores_aprobados }}</h3>
-      <p>Proveedores Aprobados</p>
-    </div>
-  </div>
-
-  <!-- 📊 Gráfico de estados -->
-  <div style="max-width:600px; margin:0 auto 60px auto;">
-    <canvas id="graficoEstados"></canvas>
-  </div>
-
-  <!-- 🧾 Últimos pedidos -->
-  <h3 style="color:#5b0d0d; margin-bottom:15px;">Últimos pedidos</h3>
-  <table style="width:100%; border-collapse:collapse; text-align:center;">
-    <thead>
-      <tr style="background:#5b0d0d; color:#fff;">
-        <th style="padding:10px;">Cliente</th>
-        <th>Plato</th>
-        <th>Proveedor</th>
-        <th>Estado</th>
-        <th>Fecha</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in ultimos_pedidos %}
-      <tr style="border-bottom:1px solid #ddd;">
-        <td style="padding:10px;">{{ p.cliente }}</td>
-        <td>{{ p.plato }}</td>
-        <td>{{ p.proveedor.nombre }}</td>
-        <td>
-          {% if p.estado == 'pendiente' %}
-            <span style="background:#ccc; color:#000; padding:4px 10px; border-radius:5px;">Pendiente</span>
-          {% elif p.estado == 'preparando' %}
-            <span style="background:#3b82f6; color:#fff; padding:4px 10px; border-radius:5px;">Preparando</span>
-          {% elif p.estado == 'en_camino' %}
-            <span style="background:#f97316; color:#fff; padding:4px 10px; border-radius:5px;">En camino</span>
-          {% elif p.estado == 'entregado' %}
-            <span style="background:#16a34a; color:#fff; padding:4px 10px; border-radius:5px;">Entregado</span>
-          {% endif %}
-        </td>
-        <td>{{ p.fecha_pedido|date:"d/m/Y H:i" }}</td>
-      </tr>
-      {% empty %}
-      <tr><td colspan="5" style="padding:15px;">No hay pedidos recientes.</td></tr>
-      {% endfor %}
-    </tbody>
-  </table>
 </section>
+{% endblock %}
 
-
-<!-- 📊 Script del gráfico -->
+{% block extra_js %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-  const pedidosData = {
-    pendientes: "{{ pedidos_pendientes|default:0 }}",
-    preparando: "{{ pedidos_preparando|default:0 }}",
-    en_camino: "{{ pedidos_en_camino|default:0 }}",
-    entregados: "{{ pedidos_entregados|default:0 }}"
-  };
+  const labelsDias = {{ labels_dias|safe }};
+  const dataDias = {{ data_dias|safe }};
 
-  const ctx = document.getElementById("graficoEstados").getContext("2d");
+  const ctx = document.getElementById('ventas7dias').getContext('2d');
 
   new Chart(ctx, {
-    type: "doughnut",
+    type: 'bar',
     data: {
-      labels: ["Pendiente", "Preparando", "En Camino", "Entregado"],
+      labels: labelsDias,
       datasets: [{
-        label: "Pedidos",
-        data: [
-          pedidosData.pendientes,
-          pedidosData.preparando,
-          pedidosData.en_camino,
-          pedidosData.entregados
-        ],
-        backgroundColor: ["#facc15", "#3b82f6", "#f97316", "#16a34a"],
+        label: 'Ventas $',
+        data: dataDias,
         borderWidth: 1
       }]
     },
     options: {
+      scales: {
+        y: {
+          beginAtZero: true
+        }
+      },
       plugins: {
         legend: {
-          position: "bottom",
-          labels: { color: "#000" }
+          display: false
         }
       }
     }
   });
 </script>
-
 {% endblock %}

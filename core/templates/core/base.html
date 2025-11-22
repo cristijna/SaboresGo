@@ -11,6 +11,20 @@
   <link rel="icon" type="image/png" href="{% static 'core/img/favicon.png' %}">
   <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
   {% block extra_css %}{% endblock %}
+
+  <style>
+    /* Padding general para evitar contenido pegado a los bordes */
+    main.main-content {
+      padding: 30px 40px;
+    }
+
+    /* Centrar contenido */
+    .main-content .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+  </style>
+
 </head>
 <body>
   <header class="header">
@@ -22,30 +36,30 @@
         </a>
       </div>
 
-    <nav class="navbar">
-      <ul class="nav-links">
-        <li><a href="{% url 'core:catalogo' %}">Inicio</a></li>
-        <li><a href="{% url 'core:proveedores' %}">Proveedores</a></li>  {# 🔹 Nuevo botón visible siempre #}
+      <nav class="navbar">
+        <ul class="nav-links">
+          <li><a href="{% url 'core:catalogo' %}">Inicio</a></li>
+          <li><a href="{% url 'core:proveedores' %}">Proveedores</a></li>
 
-        {% if user.is_authenticated %}
-            {% if user.is_staff %}
-                <li><a href="{% url 'adminpanel:dashboard' %}">Panel de Administración</a></li>
-            {% elif user.proveedor %}
-                <li><a href="{% url 'core:plato_list' %}">Mis Platos</a></li>
-            {% else %}
-                <li><a href="{% url 'core:pedido_list' %}">Carrito</a></li>
-            {% endif %}
+          {% if user.is_authenticated %}
+              {% if user.is_staff %}
+                  <li><a href="{% url 'adminpanel:dashboard' %}">Panel de Administración</a></li>
+              {% elif user.proveedor %}
+                  <li><a href="{% url 'core:plato_list' %}">Mis Platos</a></li>
+              {% else %}
+                  <li><a href="{% url 'core:pedido_list' %}">Carrito</a></li>
+              {% endif %}
 
-            <li class="user-info">
-                <span class="username">👤 {{ user.username }}</span>
-                <a href="{% url 'core:logout' %}" class="logout-btn">Cerrar sesión</a>
-            </li>
-        {% else %}
-            <li><a href="{% url 'core:login' %}" class="login-btn">Ingresar</a></li>
-            <li><a href="{% url 'core:register' %}" class="register-btn">Registrarse</a></li>
-        {% endif %}
-      </ul>
-    </nav>
+              <li class="user-info">
+                  <span class="username">👤 {{ user.username }}</span>
+                  <a href="{% url 'core:logout' %}" class="logout-btn">Cerrar sesión</a>
+              </li>
+          {% else %}
+              <li><a href="{% url 'core:login' %}" class="login-btn">Ingresar</a></li>
+              <li><a href="{% url 'core:register' %}" class="register-btn">Registrarse</a></li>
+          {% endif %}
+        </ul>
+      </nav>
     </div>
   </header>
 
@@ -59,6 +73,7 @@
     </section>
   {% endif %}
 
+  <!-- 📌 Bloque principal de contenido (único y correcto) -->
   <main class="main-content">
     <div class="container">
       {% block content %}{% endblock %}
@@ -93,6 +108,5 @@
     });
   </script>
 
-  {% block extra_js %}{% endblock %}
 </body>
 </html>

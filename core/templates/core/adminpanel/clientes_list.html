@@ -1,0 +1,91 @@
+{% extends "core/base.html" %}
+{% block title %}Clientes{% endblock %}
+
+{% block extra_css %}
+<style>
+.table-wrapper {
+  background: #fff;
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0,0,0,.06);
+  margin-top: 20px;
+}
+
+table.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+table.admin-table th,
+table.admin-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+table.admin-table th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+table.admin-table tr:hover {
+  background: #f3f4f6;
+}
+
+a.detalle-link {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+a.detalle-link:hover {
+  text-decoration: underline;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom:20px;">Clientes registrados</h1>
+
+<div class="table-wrapper">
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>Cliente</th>
+      <th>Email</th>
+      <th>Pedidos</th>
+      <th>Total gastado</th>
+      <th>Último pedido</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in clientes %}
+    <tr>
+      <td>{{ c.cliente.username }}</td>
+      <td>{{ c.cliente.email }}</td>
+      <td>{{ c.total_pedidos }}</td>
+      <td>${{ c.total_gastado }}</td>
+      <td>
+        {% if c.ultimo_pedido %}
+          {{ c.ultimo_pedido|date:"d/m/Y H:i" }}
+        {% else %}
+          ---
+        {% endif %}
+      </td>
+      <td>
+        <a href="{% url 'adminpanel:cliente_detalle' c.cliente.id %}" class="detalle-link">
+          Ver historial →
+        </a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="6" style="text-align:center;">No hay clientes con pedidos registrados.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

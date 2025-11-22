@@ -37,8 +37,10 @@ class Plato(models.Model):
 ESTADO_PEDIDO = (
     ('pendiente', 'Pendiente'),
     ('preparando', 'Preparando'),
+    ('listo', 'Listo'),
     ('entregado', 'Entregado'),
 )
+
 
 class Pedido(models.Model):
     cliente = models.ForeignKey(User, on_delete=models.CASCADE, related_name='pedidos')

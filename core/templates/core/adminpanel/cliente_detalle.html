@@ -1,0 +1,58 @@
+{% extends "core/base.html" %}
+{% block title %}Detalle cliente{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom:10px;">Cliente: {{ cliente.username }}</h1>
+<p style="margin-bottom:20px; color:#6b7280;">Email: {{ cliente.email }}</p>
+
+<h3>Total gastado: ${{ total_gastado }}</h3>
+
+<h2 style="margin-top:30px;">Top platos favoritos</h2>
+<table class="admin-table" style="margin-bottom:30px;">
+  <thead>
+    <tr>
+      <th>Plato</th>
+      <th>Cantidad total</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in top_platos %}
+      <tr>
+        <td>{{ p.plato__nombre }}</td>
+        <td>{{ p.total }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="2">No hay platos registrados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Historial completo de pedidos</h2>
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>Plato</th>
+      <th>Proveedor</th>
+      <th>Cantidad</th>
+      <th>Total</th>
+      <th>Estado</th>
+      <th>Fecha</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in pedidos %}
+    <tr>
+      <td>{{ p.plato.nombre }}</td>
+      <td>{{ p.plato.proveedor.empresa }}</td>
+      <td>{{ p.cantidad }}</td>
+      <td>${{ p.plato.precio|floatformat:0 }}</td>
+      <td>{{ p.estado }}</td>
+      <td>{{ p.fecha_pedido|date:"d/m/Y H:i" }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{% url 'adminpanel:clientes_list' %}" style="display:inline-block; margin-top:20px;">← Volver</a>
+
+{% endblock %}

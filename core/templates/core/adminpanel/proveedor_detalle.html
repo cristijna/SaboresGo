@@ -1,0 +1,99 @@
+{% extends "core/base.html" %}
+{% block title %}Detalle proveedor{% endblock %}
+
+{% block extra_css %}
+<style>
+  h1, h2, h3 {
+    margin-bottom: 10px;
+  }
+
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+
+  .admin-table th, .admin-table td {
+    padding: 10px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+
+  .admin-table th {
+    background: #f3f4f6;
+    text-align: left;
+  }
+
+  .back-link {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 14px;
+    background: #e5e7eb;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #111;
+  }
+
+  .back-link:hover {
+    background: #d1d5db;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>{{ proveedor.empresa }}</h1>
+<p>Usuario: {{ proveedor.user.username }}</p>
+<p>Contacto: {{ proveedor.telefono }}</p>
+
+<h2 style="margin-top:20px;">Ingresos totales: ${{ total_ingresos }}</h2>
+
+<h3 style="margin-top:30px;">Platos más vendidos</h3>
+
+<table class="admin-table" style="margin-bottom:30px;">
+  <thead>
+    <tr>
+      <th>Plato</th>
+      <th>Cantidad vendida</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in top_platos %}
+      <tr>
+        <td>{{ p.plato__nombre }}</td>
+        <td>{{ p.total_vendido }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="2">Sin ventas registradas</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Historial de pedidos</h3>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>Cliente</th>
+      <th>Plato</th>
+      <th>Cantidad</th>
+      <th>Total</th>
+      <th>Fecha</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for p in pedidos %}
+    <tr>
+      <td>{{ p.cliente.username }}</td>
+      <td>{{ p.plato.nombre }}</td>
+      <td>{{ p.cantidad }}</td>
+      <td>${{ p.plato.precio }}</td>
+      <td>{{ p.fecha_pedido|date:"d/m/Y H:i" }}</td>
+    </tr>
+    {% empty %}
+      <tr><td colspan="5">No hay pedidos registrados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{% url 'adminpanel:proveedores_list' %}" class="back-link">← Volver</a>
+
+{% endblock %}

@@ -1,0 +1,265 @@
+{% extends "core/base.html" %}
+{% block title %}Pedidos{% endblock %}
+
+{% block extra_css %}
+<style>
+  .filter-box {
+    background: #ffffff;
+    padding: 18px;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 14px;
+  }
+
+  .filter-box label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #374151;
+  }
+
+  .filter-box select,
+  .filter-box input {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+  }
+
+  .filter-box button {
+    padding: 10px 16px;
+    background: #f97316;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+
+  .admin-table th,
+  .admin-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    font-size: 0.9rem;
+  }
+
+  .admin-table th {
+    background: #f9fafb;
+    font-weight: 600;
+    color: #374151;
+  }
+
+  .admin-table tr:hover td {
+    background: #f3f4f6;
+  }
+
+  /* 🔖 ESTADOS */
+  .estado-badge {
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  .estado-pendiente     { background: #6b7280; }
+  .estado-preparando    { background: #2563eb; }
+  .estado-listo         { background: #f59e0b; }
+  .estado-entregado     { background: #16a34a; }
+
+  /* 🔘 Botones */
+  .btn-small {
+    padding: 6px 12px;
+    border-radius: 6px;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .btn-blue  { background: #2563eb; }
+  .btn-orange { background: #f59e0b; }
+  .btn-green { background: #16a34a; }
+
+  /* 📄 Paginación */
+  .pagination {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .pagination a,
+  .pagination span {
+    padding: 8px 12px;
+    margin: 0 4px;
+    border-radius: 6px;
+    background: #e5e7eb;
+    text-decoration: none;
+    color: #374151;
+    font-weight: 600;
+  }
+
+  .pagination .active {
+    background: #f97316;
+    color: white;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 style="margin-bottom: 20px;">Historial de pedidos</h1>
+
+<!-- FILTROS -->
+<form method="get" class="filter-box">
+  <div>
+    <label>Estado</label>
+    <select name="estado">
+      <option value="">Todos</option>
+      <option value="pendiente"   {% if estado == "pendiente" %}selected{% endif %}>Pendiente</option>
+      <option value="preparando"  {% if estado == "preparando" %}selected{% endif %}>Preparando</option>
+      <option value="listo"       {% if estado == "listo" %}selected{% endif %}>Listo</option>
+      <option value="entregado"   {% if estado == "entregado" %}selected{% endif %}>Entregado</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Proveedor</label>
+    <select name="proveedor">
+      <option value="">Todos</option>
+      {% for p in proveedores %}
+      <option value="{{ p.id }}" {% if proveedor_selected == p.id|stringformat:"s" %}selected{% endif %}>
+        {{ p.empresa }}
+      </option>
+      {% endfor %}
+    </select>
+  </div>
+
+  <div>
+    <label>Cliente</label>
+    <input type="text" name="cliente" value="{{ cliente }}" placeholder="Nombre usuario">
+  </div>
+
+  <div>
+    <label>Desde</label>
+    <input type="date" name="fecha_inicio" value="{{ fecha_inicio }}">
+  </div>
+
+  <div>
+    <label>Hasta</label>
+    <input type="date" name="fecha_fin" value="{{ fecha_fin }}">
+  </div>
+
+  <div style="align-self: end;">
+    <button>Filtrar</button>
+  </div>
+</form>
+
+<!-- TABLA -->
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>Cliente</th>
+      <th>Plato</th>
+      <th>Proveedor</th>
+      <th>Estado</th>
+      <th>Cantidad</th>
+      <th>Total</th>
+      <th>Fecha</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for p in pedidos %}
+    <tr>
+      <td>{{ p.cliente.username }}</td>
+      <td>{{ p.plato.nombre }}</td>
+      <td>{{ p.plato.proveedor.empresa }}</td>
+
+      <td>
+        {% if p.estado == "pendiente" %}
+          <span class="estado-badge estado-pendiente">Pendiente</span>
+
+        {% elif p.estado == "preparando" %}
+          <span class="estado-badge estado-preparando">Preparando</span>
+
+        {% elif p.estado == "listo" %}
+          <span class="estado-badge estado-listo">Listo</span>
+
+        {% elif p.estado == "entregado" %}
+          <span class="estado-badge estado-entregado">Entregado</span>
+        {% endif %}
+      </td>
+
+      <td>{{ p.cantidad }}</td>
+      <td>${{ p.plato.precio|floatformat:0 }}</td>
+      <td>{{ p.fecha_pedido|date:"d/m/Y H:i" }}</td>
+
+      <!-- ⭐ ACCIONES -->
+
+      <td>
+        {% if p.estado == "pendiente" %}
+          <a class="estado-badge estado-pendiente"
+            href="{% url 'adminpanel:cambiar_estado_pedido' p.id 'preparando' %}">
+            Pendiente → Preparar
+          </a>
+
+        {% elif p.estado == "preparando" %}
+          <a class="estado-badge estado-preparando"
+            href="{% url 'adminpanel:cambiar_estado_pedido' p.id 'listo' %}">
+            Preparando → Listo
+          </a>
+
+        {% elif p.estado == "listo" %}
+          <a class="estado-badge estado-preparando"
+            href="{% url 'adminpanel:cambiar_estado_pedido' p.id 'entregado' %}">
+            Listo → Entregar
+          </a>
+
+        {% elif p.estado == "entregado" %}
+          <span class="estado-badge estado-entregado">Entregado ✔</span>
+        {% endif %}
+      </td>
+
+
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="8" style="text-align:center; padding:20px;">No se encontraron pedidos.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<!-- PAGINACIÓN -->
+<div class="pagination">
+  {% if pedidos.has_previous %}
+    <a href="?page={{ pedidos.previous_page_number }}">&laquo;</a>
+  {% endif %}
+
+  {% for page in pedidos.paginator.page_range %}
+    {% if page == pedidos.number %}
+      <span class="active">{{ page }}</span>
+    {% else %}
+      <a href="?page={{ page }}">{{ page }}</a>
+    {% endif %}
+  {% endfor %}
+
+  {% if pedidos.has_next %}
+    <a href="?page={{ pedidos.next_page_number }}">&raquo;</a>
+  {% endif %}
+</div>
+
+{% endblock %}
