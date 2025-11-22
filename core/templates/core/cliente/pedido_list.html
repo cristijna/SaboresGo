@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Mi Carrito{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+  <header class="dashboard-header">
+    <h1>🛒 Mi Carrito</h1>
+    <a href="{% url 'core:pedido_create' %}" class="btn btn-primary">➕ Agregar Plato</a>
+  </header>
+
+  {% if pedidos %}
+    <form method="post">
+      {% csrf_token %}
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Plato</th>
+            <th>Proveedor</th>
+            <th>Cantidad</th>
+            <th>Total</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for pedido in pedidos %}
+            <tr>
+              <td>{{ pedido.plato.nombre }}</td>
+              <td>{{ pedido.plato.proveedor.empresa }}</td>
+              <td>{{ pedido.cantidad }}</td>
+              <td>${{ pedido.total }}</td>
+              <td class="actions">
+                <a href="{% url 'core:pedido_edit' pedido.id %}" class="btn btn-warning">Editar</a>
+                <a href="{% url 'core:pedido_delete' pedido.id %}" class="btn btn-danger">Eliminar</a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="cart-summary">
+        <h3>Total: ${{ total_carrito }}</h3>
+        <button type="submit" name="confirmar_carrito" class="btn btn-success">✅ Confirmar Pedido</button>
+      </div>
+    </form>
+  {% else %}
+    <p class="empty">Tu carrito está vacío.</p>
+  {% endif %}
+</section>
+{% endblock %}

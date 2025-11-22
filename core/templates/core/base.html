@@ -1,0 +1,98 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sabores - Plataforma de pedidos y gestión gastronómica">
+  <meta name="author" content="Sabores">
+  <title>Sabores | {% block title %}{% endblock %}</title>
+
+  <link rel="icon" type="image/png" href="{% static 'core/img/favicon.png' %}">
+  <link rel="stylesheet" href="{% static 'core/css/styles.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+  <header class="header">
+    <div class="container nav-container">
+      <div class="logo-area">
+        <a href="{% url 'core:catalogo' %}" class="brand">
+          <img src="{% static 'core/img/logo.jpg' %}" alt="Sabores" class="brand-logo">
+          <span class="brand-name">Sabores</span>
+        </a>
+      </div>
+
+    <nav class="navbar">
+      <ul class="nav-links">
+        <li><a href="{% url 'core:catalogo' %}">Inicio</a></li>
+        <li><a href="{% url 'core:proveedores' %}">Proveedores</a></li>  {# 🔹 Nuevo botón visible siempre #}
+
+        {% if user.is_authenticated %}
+            {% if user.is_staff %}
+                <li><a href="{% url 'adminpanel:dashboard' %}">Panel de Administración</a></li>
+            {% elif user.proveedor %}
+                <li><a href="{% url 'core:plato_list' %}">Mis Platos</a></li>
+            {% else %}
+                <li><a href="{% url 'core:pedido_list' %}">Carrito</a></li>
+            {% endif %}
+
+            <li class="user-info">
+                <span class="username">👤 {{ user.username }}</span>
+                <a href="{% url 'core:logout' %}" class="logout-btn">Cerrar sesión</a>
+            </li>
+        {% else %}
+            <li><a href="{% url 'core:login' %}" class="login-btn">Ingresar</a></li>
+            <li><a href="{% url 'core:register' %}" class="register-btn">Registrarse</a></li>
+        {% endif %}
+      </ul>
+    </nav>
+    </div>
+  </header>
+
+  {% if messages %}
+    <section class="messages-section">
+      <ul class="messages-list">
+        {% for message in messages %}
+          <li class="message {{ message.tags }}">{{ message }}</li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+
+  <main class="main-content">
+    <div class="container">
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-container">
+      <p>&copy; {{ now|date:"Y" }} Sabores. Todos los derechos reservados.</p>
+      <ul class="footer-links">
+        <li><a href="#">Términos y Condiciones</a></li>
+        <li><a href="#">Política de Privacidad</a></li>
+        <li><a href="#">Soporte</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="{% static 'core/js/main.js' %}"></script>
+  
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const rolSelect = document.querySelector('select[name="rol"]');
+      const proveedorFields = document.getElementById('proveedor-fields');
+
+      if (rolSelect && proveedorFields) {
+        const toggleProveedorFields = () => {
+          proveedorFields.style.display = rolSelect.value === 'proveedor' ? 'block' : 'none';
+        };
+        toggleProveedorFields();
+        rolSelect.addEventListener('change', toggleProveedorFields);
+      }
+    });
+  </script>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

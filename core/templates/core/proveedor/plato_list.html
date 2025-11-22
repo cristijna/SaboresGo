@@ -1,0 +1,48 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Mis Platos{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+  <header class="dashboard-header">
+    <h1>Gestión de Platos</h1>
+    <a href="{% url 'core:plato_create' %}" class="btn btn-primary">➕ Agregar nuevo plato</a>
+  </header>
+
+  {% if messages %}
+    <ul class="messages">
+      {% for m in messages %}
+        <li class="message {{ m.tags }}">{{ m }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if platos %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Descripción</th>
+          <th>Precio</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for plato in platos %}
+          <tr>
+            <td>{{ plato.nombre }}</td>
+            <td>{{ plato.descripcion|truncatewords:12 }}</td>
+            <td>${{ plato.precio }}</td>
+            <td class="actions">
+              <a href="{% url 'core:plato_edit' plato.id %}" class="btn btn-warning">Editar</a>
+              <a href="{% url 'core:plato_delete' plato.id %}" class="btn btn-danger">Eliminar</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">No tienes platos registrados aún.</p>
+  {% endif %}
+</section>
+{% endblock %}

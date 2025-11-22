@@ -1,0 +1,58 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+
+<!-- 🧱 Encabezado -->
+<section style="background:#000; color:#fff; display:flex; justify-content:space-between; align-items:center; padding:40px 5vw;">
+  <h1 style="font-size:3rem; font-weight:700;">Proveedores</h1>
+  <div style="font-size:3rem; font-weight:700; letter-spacing:1px;">SABORESGO</div>
+</section>
+
+<!-- 💼 Sección principal -->
+<section style="display:flex; gap:40px; padding:40px 5vw; align-items:center; flex-wrap:wrap;">
+
+  <!-- Texto e invitación -->
+  <div style="flex:1; min-width:300px;">
+    <p style="font-size:1.1rem; margin-bottom:25px; line-height:1.6;">
+      Si tienes un negocio gastronómico y quieres ser parte de <strong>SaboresGo</strong>, te invitamos a unirte como proveedor.
+      Podrás ofrecer tus platos a cientos de clientes y gestionar tus pedidos directamente desde nuestra plataforma.
+    </p>
+
+    <!-- Botón formulario -->
+    <a href="{% url 'core:register' %}"
+      style="display:inline-block; background:#000; color:#fff; padding:12px 50px; border-radius:9999px;
+              font-weight:600; text-decoration:none; margin-bottom:15px; transition:background 0.3s;">
+      Formulario
+    </a>
+
+
+    <!-- Botón login (ruta absoluta para evitar conflicto con /login/) -->
+    <a href="{% url 'core:login' %}"
+      style="display:inline-block; background:#1f0a54; color:#fff;
+              padding:12px 50px; border-radius:9999px; font-weight:600;
+              text-decoration:none; transition:background 0.3s;">
+      Login
+    </a>
+
+  </div>
+
+    <!-- Botón ir al panel (si el usuario ya está autenticado) -->
+    {% if user.is_authenticated and user.perfil.rol == 'proveedor' %}
+    <a href="/pedidos/proveedor/"
+        style="display:inline-block; background:#16a34a; color:#fff;
+                padding:12px 50px; border-radius:9999px; font-weight:600;
+                text-decoration:none; transition:background 0.3s; margin-top:15px;">
+        Ir a mis Pedidos
+    </a>
+    {% endif %}
+
+
+  <!-- Imagen -->
+  <div style="flex:1; min-height:280px; background:#eee; border-radius:10px; overflow:hidden;">
+    <img src="{% static 'img/proveedores-banner.jpg' %}" alt="Proveedores SaboresGo"
+         style="width:100%; height:100%; object-fit:cover;">
+  </div>
+
+</section>
+
+{% endblock %}

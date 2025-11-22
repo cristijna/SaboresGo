@@ -1,0 +1,1010 @@
+/* ==========================
+   Variables y Reset
+========================== */
+:root {
+  --primary: #7b1e1e;          /* Burdeos elegante */
+  --primary-dark: #5a1212;      /* Burdeos oscuro */
+  --accent: #d4af37;            /* Dorado */
+  --light-bg: #faf7f4;          /* Fondo claro cálido */
+  --text-color: #2b2b2b;
+  --border-radius: 0.8rem;
+  --transition: 0.3s ease;
+  --card-bg: #fff;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', 'Segoe UI', sans-serif;
+  background-color: var(--light-bg);
+  color: var(--text-color);
+  line-height: 1.7;
+}
+
+/* ==========================
+   Header / Navbar
+========================== */
+.header {
+  background: var(--primary);
+  color: #fff;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.15);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.nav-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  width: 90%;
+  margin: 0 auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+  color: var(--accent);
+  font-weight: 700;
+  font-size: 1.3rem;
+  letter-spacing: 0.5px;
+}
+
+.brand-logo {
+  width: 55px;
+  height: 55px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+}
+
+.navbar ul {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.navbar a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.navbar a::after {
+  content: '';
+  position: absolute;
+  width: 0%;
+  height: 2px;
+  left: 0;
+  bottom: -4px;
+  background: var(--accent);
+  transition: width 0.3s;
+}
+
+.navbar a:hover::after {
+  width: 100%;
+}
+
+/* ==========================
+   Cards / Catálogo
+========================== */
+.proveedor-card,
+.plato-card {
+  background: var(--card-bg);
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.07);
+  overflow: hidden;
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.proveedor-card:hover,
+.plato-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+}
+
+.proveedor-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.proveedor-logo {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+}
+
+.platos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+}
+
+.plato-img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  border-bottom: 2px solid var(--accent);
+}
+
+.plato-body {
+  padding: 1rem 1.3rem;
+}
+
+.plato-nombre {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--primary-dark);
+}
+
+/* ==========================
+   Botones
+========================== */
+.btn {
+  cursor: pointer;
+  display: inline-block;
+  padding: 0.7rem 1.5rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  border: none;
+  transition: all var(--transition);
+  text-decoration: none;
+  text-align: center;
+}
+
+.btn-primary {
+  background-color: var(--primary);
+  color: #fff;
+}
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+}
+
+.btn-accent {
+  background-color: var(--accent);
+  color: #fff;
+}
+.btn-accent:hover {
+  filter: brightness(1.1);
+}
+
+/* ==========================
+   Footer
+========================== */
+.footer {
+  background: var(--primary-dark);
+  color: #f8f8f8;
+  padding: 2rem 0;
+  text-align: center;
+  font-size: 0.9rem;
+  letter-spacing: 0.4px;
+}
+
+.footer-links {
+  margin-top: 0.8rem;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.footer-links a {
+  text-decoration: none;
+  color: var(--accent);
+}
+
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+/* ==========================
+   Responsive
+========================== */
+@media(max-width:768px) {
+  .navbar ul {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .platos-grid {
+    grid-template-columns: 1fr;
+  }
+  .proveedor-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+
+/* --- Sección principal del inicio --- */
+section.inicio {
+  padding: 60px 6vw;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* --- Nombre del proveedor (por ejemplo Mcdonald) --- */
+.inicio h1 {
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: #300000;
+  margin-bottom: 20px;
+}
+
+/* --- Contenedor de platos --- */
+.platos-container {
+  display: flex;
+  gap: 30px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+
+/* --- Tarjeta de plato --- */
+.plato-card {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 20px;
+  width: 230px;
+  text-align: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.plato-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* --- Imagen del plato --- */
+.plato-card img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  background: #5c0a0a;
+}
+
+/* --- Info del plato --- */
+.plato-card h2 {
+  font-size: 1.1rem;
+  margin: 10px 0 0;
+  font-weight: 600;
+}
+
+.plato-card p.precio {
+  color: #781c1c;
+  font-weight: 600;
+  font-size: 1rem;
+  margin: 5px 0 10px;
+}
+
+/* --- Botón agregar al carrito --- */
+.btn-agregar {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 2px solid #781c1c;
+  color: #781c1c;
+  border-radius: 30px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-agregar:hover {
+  background: #781c1c;
+  color: #fff;
+}
+
+/* --- Enlace "Agregar al menú semanal" --- */
+.menu-semanal-link {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.9rem;
+  color: #a12b2b;
+  text-decoration: none;
+}
+
+.menu-semanal-link:hover {
+  text-decoration: underline;
+}
+
+/* --- Botón "Ver más" --- */
+.btn-vermas {
+  background: #781c1c;
+  color: white;
+  font-size: 1.1rem;
+  padding: 12px 28px;
+  border-radius: 50px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  align-self: flex-end;
+  transition: background 0.2s ease;
+}
+
+.btn-vermas:hover {
+  background: #a22c2c;
+}
+
+/* === 🟤 Estilos para el catálogo de proveedores y platos === */
+
+.catalogo {
+  padding: 60px 6vw;
+  background: #fff;
+}
+
+/* --- Encabezado --- */
+.catalogo-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.catalogo-header h1 {
+  font-size: 2.6rem;
+  color: #4b0f0f;
+  font-weight: 700;
+}
+
+.catalogo-header .subtitulo {
+  color: #611a1a;
+  font-size: 1.1rem;
+  margin-top: 10px;
+}
+
+/* --- Tarjeta del proveedor --- */
+.proveedor-card {
+  background: #fff;
+  border: 1px solid #ececec;
+  border-radius: 18px;
+  padding: 30px 40px;
+  margin-bottom: 60px;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.06);
+  transition: all 0.25s ease;
+}
+
+.proveedor-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* --- Info del proveedor --- */
+.proveedor-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.proveedor-logo {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid #7a1717;
+}
+
+.proveedor-nombre {
+  font-size: 1.7rem;
+  color: #320000;
+  font-weight: 700;
+  margin: 0;
+}
+
+.proveedor-telefono {
+  color: #a22c2c;
+  margin-top: 4px;
+}
+
+.proveedor-descripcion {
+  color: #5a5a5a;
+  margin-top: 10px;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+/* --- Grilla de platos --- */
+.platos-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 30px;
+  justify-content: flex-start;
+}
+
+/* --- Tarjeta del plato --- */
+.plato-card {
+  background: #fff;
+  border: 1px solid #e7e7e7;
+  border-radius: 20px;
+  width: 230px;
+  overflow: hidden;
+  text-align: center;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.plato-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+.plato-img-container {
+  width: 100%;
+  background: #5a0f0f;
+}
+
+.plato-img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+}
+
+.plato-body {
+  padding: 15px 10px 20px;
+}
+
+.plato-nombre {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #320000;
+  margin-bottom: 5px;
+}
+
+.plato-descripcion {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 10px;
+  min-height: 40px;
+}
+
+.plato-precio {
+  font-size: 1rem;
+  color: #7a1717;
+  margin-bottom: 10px;
+}
+
+/* --- Formulario de pedido --- */
+.pedido-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.pedido-cantidad {
+  width: 60px;
+  text-align: center;
+  padding: 4px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.btn {
+  border-radius: 30px;
+  font-weight: 600;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: #781c1c;
+  color: #fff;
+  border: none;
+}
+
+.btn-primary:hover {
+  background: #a22c2c;
+}
+
+.btn-outline {
+  border: 2px solid #781c1c;
+  color: #781c1c;
+  background: transparent;
+}
+
+.btn-outline:hover {
+  background: #781c1c;
+  color: #fff;
+}
+
+/* --- Textos vacíos --- */
+.sin-platos,
+.sin-proveedores {
+  text-align: center;
+  color: #7a1717;
+  font-weight: 500;
+  padding: 20px 0;
+}
+
+
+/* === 🍷 Estilos del Carrito (pedido_list.html) === */
+.dashboard {
+  padding: 60px 6vw;
+  background: #fff;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.dashboard-header h1 {
+  font-size: 2.3rem;
+  color: #4b0f0f;
+  font-weight: 700;
+}
+
+.dashboard-header .btn-primary {
+  background: #781c1c;
+  color: #fff;
+  border-radius: 30px;
+  padding: 10px 20px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease;
+}
+
+.dashboard-header .btn-primary:hover {
+  background: #a22c2c;
+}
+
+/* --- Tabla de pedidos --- */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.06);
+}
+
+.data-table th,
+.data-table td {
+  border-bottom: 1px solid #eaeaea;
+  padding: 14px 16px;
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.data-table th {
+  background: #fafafa;
+  color: #611a1a;
+  font-weight: 700;
+}
+
+.data-table tr:hover {
+  background: #fff5f5;
+}
+
+/* --- Acciones --- */
+.actions .btn {
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.btn-warning {
+  background: #f1c232;
+  color: #000;
+}
+
+.btn-warning:hover {
+  background: #d6ad1d;
+}
+
+.btn-danger {
+  background: #b22222;
+  color: #fff;
+}
+
+.btn-danger:hover {
+  background: #d43d3d;
+}
+
+.btn-success {
+  background: #388e3c;
+  color: #fff;
+}
+
+.btn-success:hover {
+  background: #2e7d32;
+}
+
+/* --- Resumen --- */
+.cart-summary {
+  text-align: right;
+  margin-top: 20px;
+}
+
+.cart-summary h3 {
+  color: #7a1717;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* --- Botón confirmar --- */
+.btn-success {
+  border: none;
+  border-radius: 30px;
+  padding: 10px 22px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+/* --- Mensaje vacío --- */
+.empty {
+  text-align: center;
+  font-size: 1.1rem;
+  color: #7a1717;
+  font-weight: 500;
+  margin-top: 40px;
+}
+
+/* === 🧾 Estilos para pedido_confirm_delete.html === */
+.confirm-section {
+  text-align: center;
+  padding: 80px 6vw;
+  background: #fff;
+}
+
+.confirm-section h2 {
+  font-size: 1.8rem;
+  color: #4b0f0f;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.confirm-section p {
+  color: #444;
+  font-size: 1rem;
+  margin-bottom: 10px;
+}
+
+.confirm-section .btn {
+  display: inline-block;
+  padding: 10px 22px;
+  border-radius: 30px;
+  font-weight: 600;
+  text-decoration: none;
+  margin: 10px 8px;
+  transition: background 0.2s ease;
+}
+
+.btn-secondary {
+  border: 2px solid #7a1717;
+  color: #7a1717;
+  background: transparent;
+}
+
+.btn-secondary:hover {
+  background: #7a1717;
+  color: #fff;
+}
+
+/* === 📝 Estilos para pedido_form.html === */
+.form-section {
+  padding: 60px 6vw;
+  background: #fff;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-section h2 {
+  text-align: center;
+  color: #4b0f0f;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+
+.styled-form {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 5px 14px rgba(0, 0, 0, 0.05);
+}
+
+.styled-form label {
+  font-weight: 600;
+  color: #4b0f0f;
+}
+
+.styled-form input,
+.styled-form select {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-top: 4px;
+  margin-bottom: 12px;
+}
+
+.form-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* === 🔐 Estilos para la página de Login === */
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 160px); /* evita cubrir navbar y footer */
+  background: #fff;
+  padding: 60px 6vw;
+}
+
+.login-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 40px 50px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+  text-align: center;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.login-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #4b0f0f;
+  margin-bottom: 10px;
+}
+
+.login-subtitle {
+  font-size: 1rem;
+  color: #6b1d1d;
+  margin-bottom: 25px;
+}
+
+/* --- Formulario --- */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-group {
+  text-align: left;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #4b0f0f;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-group input:focus {
+  border-color: #781c1c;
+  box-shadow: 0 0 0 2px rgba(120, 28, 28, 0.15);
+  outline: none;
+}
+
+/* --- Errores --- */
+.error {
+  display: block;
+  color: #b22222;
+  font-size: 0.85rem;
+  margin-top: 4px;
+}
+
+/* --- Botón principal --- */
+.btn-primary.w-100 {
+  width: 100%;
+  background: #781c1c;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-primary.w-100:hover {
+  background: #a22c2c;
+}
+
+/* --- Enlace registro --- */
+.register-link {
+  margin-top: 25px;
+  font-size: 0.95rem;
+  color: #4b0f0f;
+}
+
+.register-link a {
+  color: #781c1c;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
+}
+/* === 🧾 Estilos para la página de Registro === */
+
+.register-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 160px);
+  background: #fff;
+  padding: 60px 6vw;
+}
+
+.register-card {
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 16px;
+  padding: 40px 50px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.06);
+  animation: fadeIn 0.4s ease;
+}
+
+.register-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #4b0f0f;
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+.register-subtitle {
+  font-size: 1rem;
+  color: #6b1d1d;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+/* --- Formulario --- */
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-section {
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 20px 25px;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.form-section h3 {
+  color: #4b0f0f;
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #781c1c;
+  display: inline-block;
+  padding-bottom: 4px;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #4b0f0f;
+}
+
+.form-control,
+.register-form input,
+.register-form select,
+.register-form textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  margin-top: 4px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus,
+.register-form input:focus,
+.register-form select:focus,
+.register-form textarea:focus {
+  border-color: #781c1c;
+  box-shadow: 0 0 0 2px rgba(120, 28, 28, 0.15);
+  outline: none;
+}
+
+/* --- Botón principal --- */
+.btn-primary.w-100 {
+  width: 100%;
+  background: #781c1c;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.btn-primary.w-100:hover {
+  background: #a22c2c;
+}
+
+/* --- Enlace a login --- */
+.login-link {
+  text-align: center;
+  margin-top: 25px;
+  font-size: 0.95rem;
+  color: #4b0f0f;
+}
+
+.login-link a {
+  color: #781c1c;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}
+
+/* --- Campos ocultos de proveedor --- */
+.hidden {
+  display: none;
+}
+
+/* --- Animación --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}

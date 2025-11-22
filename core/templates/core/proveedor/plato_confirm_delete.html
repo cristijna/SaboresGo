@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Eliminar Plato{% endblock %}
+
+{% block content %}
+<section class="confirm-section">
+  <h2>¿Estás seguro de eliminar este plato?</h2>
+  <p><strong>{{ object.nombre }}</strong> — ${{ object.precio }}</p>
+  <p>Esta acción no se puede deshacer.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar definitivamente</button>
+    <a href="{% url 'core:plato_list' %}" class="btn btn-secondary">Cancelar</a>
+  </form>
+</section>
+{% endblock %}

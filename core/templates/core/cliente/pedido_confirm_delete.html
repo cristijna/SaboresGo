@@ -1,0 +1,17 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Eliminar Pedido{% endblock %}
+
+{% block content %}
+<section class="confirm-section">
+  <h2>¿Deseas eliminar este pedido?</h2>
+  <p><strong>{{ object.plato.nombre }}</strong> — Cantidad: {{ object.cantidad }}</p>
+  <p>Esta acción no se puede revertir.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="{% url 'core:pedido_list' %}" class="btn btn-secondary">Cancelar</a>
+  </form>
+</section>
+{% endblock %}
