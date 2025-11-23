@@ -1,0 +1,69 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Mis Pedidos{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+
+  <header class="dashboard-header">
+    <h1>📑 Mis Pedidos</h1>
+    <p class="subtitulo">Revisa el historial de pedidos confirmados y su estado operativo.</p>
+  </header>
+
+  {% if pedidos %}
+    <div class="card">
+      <div class="card-body">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Plato</th>
+              <th>Cantidad</th>
+              <th>Fecha</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for pedido in pedidos %}
+              <tr>
+                <td>#{{ pedido.id }}</td>
+                <td>{{ pedido.plato.nombre }}</td>
+                <td>{{ pedido.cantidad }}</td>
+                <td>{{ pedido.fecha_pedido|date:"d/m/Y H:i" }}</td>
+
+                <td>
+                  {% if pedido.estado == 'pendiente' %}
+                    <span class="badge bg-secondary">Pendiente</span>
+
+                  {% elif pedido.estado == 'preparando' %}
+                    <span class="badge bg-warning text-dark">Preparando</span>
+
+                  {% elif pedido.estado == 'listo' %}
+                    <span class="badge bg-info text-dark">Listo para retiro</span>
+
+                  {% elif pedido.estado == 'entregado' %}
+                    <span class="badge bg-success">Entregado</span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  <a href="{% url 'core:pedido_detalle' pedido.id %}" class="btn btn-sm btn-primary">
+                    Ver detalle
+                  </a>
+                </td>
+
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  {% else %}
+    <p class="alert alert-info">No tienes pedidos confirmados registrados.</p>
+  {% endif %}
+
+</section>
+{% endblock %}

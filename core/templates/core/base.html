@@ -13,12 +13,10 @@
   {% block extra_css %}{% endblock %}
 
   <style>
-    /* Padding general para evitar contenido pegado a los bordes */
     main.main-content {
       padding: 30px 40px;
     }
 
-    /* Centrar contenido */
     .main-content .container {
       max-width: 1400px;
       margin: 0 auto;
@@ -42,18 +40,24 @@
           <li><a href="{% url 'core:proveedores' %}">Proveedores</a></li>
 
           {% if user.is_authenticated %}
+
               {% if user.is_staff %}
                   <li><a href="{% url 'adminpanel:dashboard' %}">Panel de Administración</a></li>
+
               {% elif user.proveedor %}
                   <li><a href="{% url 'core:plato_list' %}">Mis Platos</a></li>
+
               {% else %}
+                  <!-- Cliente -->
                   <li><a href="{% url 'core:pedido_list' %}">Carrito</a></li>
+                  <li><a href="{% url 'core:mis_pedidos' %}">Mis pedidos</a></li>
               {% endif %}
 
               <li class="user-info">
                   <span class="username">👤 {{ user.username }}</span>
                   <a href="{% url 'core:logout' %}" class="logout-btn">Cerrar sesión</a>
               </li>
+
           {% else %}
               <li><a href="{% url 'core:login' %}" class="login-btn">Ingresar</a></li>
               <li><a href="{% url 'core:register' %}" class="register-btn">Registrarse</a></li>
@@ -73,7 +77,6 @@
     </section>
   {% endif %}
 
-  <!-- 📌 Bloque principal de contenido (único y correcto) -->
   <main class="main-content">
     <div class="container">
       {% block content %}{% endblock %}

@@ -1,0 +1,78 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Detalle del Pedido{% endblock %}
+
+{% block content %}
+<section class="dashboard">
+
+  <header class="dashboard-header">
+    <h1>📦 Detalle del Pedido</h1>
+    <a href="{% url 'core:pedido_list' %}" class="btn btn-secondary">⬅ Volver</a>
+  </header>
+
+  <div class="card pedido-card">
+    <div class="card-body">
+
+      <h2 class="pedido-title">{{ pedido.plato.nombre }}</h2>
+      <p class="pedido-subtitle">Cantidad: <strong>{{ pedido.cantidad }}</strong></p>
+
+      <hr>
+
+      <div class="pedido-info">
+        <p><strong>Cliente:</strong> {{ pedido.cliente.username }}</p>
+        <p><strong>Dirección:</strong> {{ pedido.direccion|default:"No indicada" }}</p>
+        <p><strong>Fecha:</strong> {{ pedido.fecha_pedido|date:"d/m/Y H:i" }}</p>
+      </div>
+
+      <hr>
+
+      <div class="pedido-status">
+        <label><strong>Estado del pedido:</strong></label><br>
+
+        {% if pedido.estado == 'pendiente' %}
+          <span class="badge bg-secondary pedido-badge">Pendiente</span>
+        {% elif pedido.estado == 'preparando' %}
+          <span class="badge bg-warning text-dark pedido-badge">Preparando</span>
+        {% elif pedido.estado == 'listo' %}
+          <span class="badge bg-info text-dark pedido-badge">Listo para retiro</span>
+        {% elif pedido.estado == 'entregado' %}
+          <span class="badge bg-success pedido-badge">Entregado</span>
+        {% endif %}
+      </div>
+
+    </div>
+  </div>
+
+</section>
+
+<style>
+  .pedido-card {
+    padding: 22px;
+    margin-top: 20px;
+  }
+
+  .pedido-title {
+    font-size: 1.9rem;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  .pedido-subtitle {
+    font-size: 1.2rem;
+    opacity: .8;
+  }
+
+  .pedido-info p {
+    margin: 6px 0;
+  }
+
+  .pedido-status {
+    margin-top: 15px;
+  }
+
+  .pedido-badge {
+    font-size: 1rem;
+    padding: 5px 10px;
+  }
+</style>
+{% endblock %}

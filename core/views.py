@@ -48,13 +48,27 @@ def logout_view(request):
 
 def catalogo(request):
     proveedores = Proveedor.objects.all().prefetch_related('platos')
+
     # Determinar si el usuario es proveedor
     is_proveedor = False
+    latest_pedido = None
+
     if request.user.is_authenticated:
-        is_proveedor = hasattr(request.user, 'proveedor_profile')
+        # si es proveedor lo mantenemos igual
+        is_proveedor = hasattr(request.user, 'proveedor')
+
+        # buscar el último pedido confirmado O con estado que tu quieras
+        latest_pedido = (
+            Pedido.objects
+            .filter(cliente=request.user)
+            .order_by('-creado_en')
+            .first()
+        )
+
     return render(request, 'core/catalogo.html', {
         'proveedores': proveedores,
-        'is_proveedor': is_proveedor
+        'is_proveedor': is_proveedor,
+        'latest_pedido': latest_pedido
     })
 
 # --- Proveedor: CRUD Platos ---
@@ -195,6 +209,20 @@ def pedido_rapido(request, pk):
 from django.shortcuts import render, get_object_or_404
 from .models import Plato
 
-def plato_detalle(request, id):
-    plato = get_object_or_404(Plato, id=id)
-    return render(request, 'core/plato_detalle.html', {'plato': plato})
+@login_required
+def pedido_detalle(request, pk):
+    pedido = get_object_or_404(Pedido, pk=pk, cliente=request.user)
+    return render(request, 'core/cliente/pedido_detalle.html', {'pedido': pedido})
+
+
+@login_required
+def mis_pedidos(request):
+    pedidos = Pedido.objects.filter(
+        cliente=request.user
+    ).exclude(
+        estado='entregado'
+    ).order_by('-fecha_pedido')
+
+    return render(request, 'core/mis_pedidos.html', {
+        'pedidos': pedidos
+    })
