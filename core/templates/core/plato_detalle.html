@@ -3,78 +3,213 @@
 {% load core_filters %}
 
 {% block content %}
-
-<div class="container mt-4">
-    <div class="card shadow-sm p-4">
-
-        <div class="row">
-            <!-- Imagen -->
-            <div class="col-md-5 text-center">
-                {% if plato.imagen %}
-                    <img src="{{ plato.imagen.url }}" class="img-fluid rounded" style="max-height: 320px;">
-                {% else %}
-                    <img src="{% static 'img/no-image.png' %}" class="img-fluid rounded">
-                {% endif %}
-            </div>
-
-            <!-- Información -->
-            <div class="col-md-7">
-                <h2 class="fw-bold">{{ plato.nombre }}</h2>
-
-                <p class="text-muted">{{ plato.descripcion }}</p>
-
-                {% if plato.ingredientes %}
-                    <h5 class="mt-3 fw-bold">Ingredientes</h5>
-                    <ul class="ps-3">
-                        {% for ing in plato.ingredientes|split:"," %}
-                            <li>{{ ing }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-
-                <h4 class="mt-4">
-                    <span class="badge bg-success p-2 fs-5">
-                        ${{ plato.precio }}
-                    </span>
-                </h4>
-
-                <hr>
-
-                <!-- Pedido rápido -->
-                {% if user.is_authenticated %}
-                <form method="post" action="{% url 'core:pedido_rapido' plato.id %}">
-                    {% csrf_token %}
-
-                    <label class="fw-semibold">Cantidad</label>
-                    <div class="d-flex align-items-center mb-3" style="gap: 12px;">
-                        <button type="button" class="btn btn-outline-dark" id="btn-menos">−</button>
-                        <input type="number" name="cantidad" id="cantidad"
-                               class="form-control text-center"
-                               style="width: 70px;" value="1" min="1">
-                        <button type="button" class="btn btn-dark" id="btn-mas">+</button>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100 py-2">
-                        Añadir al carrito
-                    </button>
-                </form>
-                {% else %}
-                <div class="alert alert-info mt-4">
-                    Inicia sesión para realizar pedidos.
-                </div>
-                {% endif %}
-            </div>
+<div class="plato-detalle-container">
+    <div class="plato-detalle-row">
+        <!-- Imagen -->
+        <div class="plato-detalle-img">
+            {% if plato.imagen %}
+                <img src="{{ plato.imagen.url }}" alt="{{ plato.nombre }}">
+            {% else %}
+                <img src="{% static 'img/no-image.png' %}" alt="Sin imagen">
+            {% endif %}
+            <div class="plato-img-overlay"></div>
         </div>
 
+        <!-- Información -->
+        <div class="plato-detalle-info">
+            <h1 class="plato-nombre">{{ plato.nombre }}</h1>
+            <p class="plato-descripcion">{{ plato.descripcion }}</p>
+
+            {% if plato.ingredientes %}
+                <h4>Ingredientes</h4>
+                <div class="ingredientes-badges">
+                    {% for ing in plato.ingredientes|split:"," %}
+                        <span class="badge">{{ ing }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <h2 class="plato-precio">${{ plato.precio }}</h2>
+
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'core:pedido_rapido' plato.id %}" class="pedido-form">
+                    {% csrf_token %}
+                    <div class="cantidad-controls">
+                        <button type="button" id="btn-menos">−</button>
+                        <input type="number" id="cantidad" name="cantidad" value="1" min="1">
+                        <button type="button" id="btn-mas">+</button>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Añadir al carrito</button>
+                </form>
+            {% else %}
+                <div class="login-alert">Inicia sesión para realizar pedidos.</div>
+            {% endif %}
+        </div>
     </div>
 </div>
 
-<script>
-    const cant = document.getElementById('cantidad');
-    document.getElementById('btn-mas').onclick = () => cant.value++;
-    document.getElementById('btn-menos').onclick = () => {
-        if (cant.value > 1) cant.value--;
-    };
-</script>
+<style>
+.plato-detalle-container {
+    width: 100%;
+    min-height: 80vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 50px 5vw;
+    background: var(--light-bg);
+}
 
+.plato-detalle-row {
+    display: flex;
+    width: 100%;
+    max-width: 1300px;
+    background: var(--card-bg);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.plato-detalle-img {
+    flex: 1;
+    position: relative;
+}
+
+.plato-detalle-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.plato-img-overlay {
+    position: absolute;
+    top:0; left:0; width:100%; height:100%;
+    background: rgba(120,28,28,0.15);
+}
+
+.plato-detalle-info {
+    flex: 1;
+    padding: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.plato-nombre {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 20px;
+}
+
+.plato-descripcion {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 25px;
+}
+
+.ingredientes-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.ingredientes-badges .badge {
+    background: var(--light-bg);
+    color: var(--primary-dark);
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-weight: 500;
+    border: 2px solid var(--accent);
+    transition: all 0.2s ease;
+}
+
+.ingredientes-badges .badge:hover {
+    background: var(--accent);
+    color: #fff;
+}
+
+.plato-precio {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 30px;
+    font-weight: 700;
+}
+
+.pedido-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 60%;
+}
+
+.cantidad-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.cantidad-controls button {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    border: none;
+    background: var(--primary);
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cantidad-controls button:hover {
+    background: var(--primary-dark);
+}
+
+.cantidad-controls input {
+    width: 70px;
+    text-align: center;
+    font-size: 1rem;
+    border-radius: 12px;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+    padding: 15px 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.login-alert {
+    color: var(--primary-dark);
+    font-weight: 600;
+}
+@media(max-width:992px){
+    .plato-detalle-row {
+        flex-direction: column;
+    }
+    .plato-detalle-info {
+        padding: 30px;
+        align-items: center;
+        text-align: center;
+    }
+    .pedido-form { width: 80%; }
+}
+</style>
+
+<script>
+const cant = document.getElementById('cantidad');
+document.getElementById('btn-mas').onclick = () => cant.value++;
+document.getElementById('btn-menos').onclick = () => { if(cant.value>1) cant.value--; };
+</script>
 {% endblock %}
