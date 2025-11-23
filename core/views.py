@@ -183,7 +183,7 @@ def proveedores(request):
 
 def plato_detalle(request, pk):
     plato = get_object_or_404(Plato, pk=pk)
-    return render(request, 'core/cliente/plato_detalle.html', {'plato': plato})
+    return render(request, 'core/plato_detalle.html', {'plato': plato})
 
 @login_required
 def pedido_rapido(request, pk):

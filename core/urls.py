@@ -6,7 +6,7 @@ app_name = 'core'
 urlpatterns = [
     # Público / Catálogo
     path('', views.catalogo, name='catalogo'),
-    path('plato/<int:id>/', views.plato_detalle, name='plato_detalle'),
+    path('plato/<int:pk>/', views.plato_detalle, name='plato_detalle'),
 
     # Autenticación
     path('register/', views.register, name='register'),
