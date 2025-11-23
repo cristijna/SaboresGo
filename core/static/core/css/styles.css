@@ -1008,3 +1008,257 @@ section.inicio {
   from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+
+/* ==========================
+   Modal de Pago (Pop Out)
+========================== */
+
+/* ------------------------
+   Contenedor Principal del Modal
+   ------------------------ */
+.modal {
+  display: none; /* Oculto por defecto, controlado por JS */
+  position: fixed; 
+  z-index: 3000; /* Asegura que esté por encima de la navbar (z-index 100) */
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto; 
+  background-color: rgba(0,0,0,0.55); /* Fondo oscuro semi-transparente */
+  animation: fadeInModal 0.3s ease-out;
+}
+
+/* Animación de entrada simple para el fondo */
+@keyframes fadeInModal {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ------------------------
+   Caja de Contenido del Modal
+   ------------------------ */
+.modal-contenido {
+  background-color: var(--card-bg); /* Fondo blanco */
+  margin: 8% auto; /* 8% desde arriba, centrado horizontalmente */
+  padding: 30px;
+  border-radius: var(--border-radius); /* 0.8rem */
+  width: 90%; 
+  max-width: 450px; /* Ancho cómodo para opciones de pago */
+  box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+  position: relative;
+  /* Animación para que la caja aparezca desde arriba */
+  animation: slideInModal 0.4s ease-out;
+}
+
+@keyframes slideInModal {
+  from { transform: translateY(-30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-contenido h2 {
+  font-size: 1.8rem;
+  color: var(--primary-dark);
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+
+.modal-contenido p {
+  color: var(--text-color);
+  margin-bottom: 20px;
+}
+
+
+/* ------------------------
+   Botón de Cerrar (X)
+   ------------------------ */
+.cerrar-modal {
+  color: #aaa;
+  float: right;
+  font-size: 30px;
+  font-weight: bold;
+  cursor: pointer;
+  line-height: 1;
+  transition: color var(--transition);
+}
+
+.cerrar-modal:hover,
+.cerrar-modal:focus {
+  color: var(--primary); /* Burdeos al pasar el mouse */
+  text-decoration: none;
+}
+
+/* ------------------------
+   Opciones de Pago
+   ------------------------ */
+.opciones-pago {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 25px;
+}
+
+.opcion-item {
+  display: flex;
+  align-items: center;
+  /* El borde será el indicador de no seleccionado */
+  border: 2px solid #e0e0e0; 
+  padding: 15px;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+}
+
+.opcion-item:hover {
+  border-color: var(--primary);
+}
+
+/* Ocultar el radio button nativo */
+.opcion-item input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+/* Estilo del borde y fondo cuando está SELECCIONADO */
+.opcion-item input:checked + .contenido-opcion-wrapper {
+  border-color: var(--primary);
+  background-color: var(--light-bg);
+}
+
+/* El wrapper ayuda a aplicar el estilo a la tarjeta completa */
+.contenido-opcion-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+
+.contenido-opcion {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+}
+
+.logo-pago {
+  width: 40px; 
+  height: 40px;
+  margin-right: 15px;
+  object-fit: contain;
+  border-radius: 4px; 
+  border: 1px solid #eee;
+}
+
+.contenido-opcion strong {
+  font-weight: 600;
+  color: var(--primary-dark);
+}
+
+.contenido-opcion small {
+  display: block;
+  color: #6a6a6a;
+  font-size: 0.85rem;
+  margin-top: 2px;
+}
+
+/* ------------------------
+   Botón Continuar (No funcional)
+   ------------------------ */
+.btn-continuar {
+  width: 100%;
+  /* Reutilizamos estilos existentes para el botón principal */
+  background: var(--primary); 
+  color: #fff;
+  border: none;
+  border-radius: 30px;
+  padding: 12px 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition);
+}
+
+.btn-continuar:hover {
+  background: var(--primary-dark);
+}
+
+/* === Estilos para la SECCIÓN DE PAGO dentro del Carrito (pedido_list.html) === */
+
+/* Contenedor principal para la selección de método de pago */
+.opciones-pago-wrapper {
+    margin-top: 30px;
+    margin-bottom: 30px; /* Espacio antes del total */
+    padding: 20px;
+    background-color: var(--light-bg); /* Fondo claro para destacarlo */
+    border-radius: var(--border-radius);
+    border: 1px solid #e0e0e0;
+}
+
+.opciones-pago-wrapper h2 {
+    font-size: 1.6rem;
+    color: var(--primary-dark);
+    font-weight: 700;
+    margin-bottom: 15px;
+    border-bottom: 2px solid var(--accent);
+    display: inline-block;
+    padding-bottom: 5px;
+}
+
+/* Reutilizamos los estilos del modal para las tarjetas de opción */
+.opciones-pago-wrapper .opcion-item {
+    /* Aquí aplicamos el estilo de tarjeta que tenías en el modal */
+    display: flex;
+    align-items: center;
+    border: 2px solid #e0e0e0; 
+    padding: 15px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    transition: all var(--transition);
+    position: relative;
+    background-color: var(--card-bg); /* Fondo blanco para las tarjetas */
+}
+
+/* Efecto hover y check reutilizado del modal */
+.opciones-pago-wrapper .opcion-item:hover {
+    border-color: var(--primary);
+}
+
+/* ESTILO CLAVE: Cuando el input requerido está checkeado */
+.opciones-pago-wrapper input:checked + .contenido-opcion-wrapper {
+    border-color: var(--primary);
+    background-color: var(--light-bg); /* Cambia el color de fondo al seleccionar */
+}
+
+
+/* Reutilizar la estructura de contenido para logos y texto */
+.opciones-pago-wrapper .contenido-opcion-wrapper {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.opciones-pago-wrapper .contenido-opcion {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.opciones-pago-wrapper .logo-pago {
+    width: 40px; 
+    height: 40px;
+    margin-right: 15px;
+    object-fit: contain;
+    border-radius: 4px; 
+    border: 1px solid #eee;
+}
+
+.opciones-pago-wrapper .contenido-opcion small {
+    display: block;
+    color: #6a6a6a;
+    font-size: 0.85rem;
+    margin-top: 2px;
+}

@@ -5,12 +5,12 @@
 {% block content %}
 <section class="dashboard">
   <header class="dashboard-header">
-    <h1>🛒 Mi Carrito</h1>
+    <h1>Mi Carrito</h1>
     <a href="{% url 'core:pedido_create' %}" class="btn btn-primary">➕ Agregar Plato</a>
   </header>
 
   {% if pedidos %}
-    <form method="post">
+    <form method="post" id="carrito-form">
       {% csrf_token %}
       <table class="data-table">
         <thead>
@@ -38,13 +38,41 @@
         </tbody>
       </table>
 
+      <div class="opciones-pago-wrapper">
+          <h2>Método de Pago 💳</h2>
+          <p>Selecciona una opción para continuar:</p>
+          
+          <label class="opcion-item">
+            <input type="radio" name="metodo_pago_final" value="webpay" required> 
+            <div class="contenido-opcion-wrapper">
+              <div class="contenido-opcion">
+                <img src="{% static 'core/img/webpei.jpg' %}" alt="WebPay" class="logo-pago">
+                <div><strong>WebPay</strong></div>
+              </div>
+            </div>
+          </label>
+          
+          <label class="opcion-item">
+            <input type="radio" name="metodo_pago_final" value="saldo_sabores">
+            <div class="contenido-opcion-wrapper">
+              <div class="contenido-opcion">
+                <img src="{% static 'core/img/salgo.jpg' %}" alt="Saldo Sabores" class="logo-pago">
+                <div><strong>Saldo Sabores</strong><small>Disponible: ${{ saldo_disponible|default:'0' }}</small></div>
+              </div>
+            </div>
+          </label>
+      </div>
       <div class="cart-summary">
         <h3>Total: ${{ total_carrito }}</h3>
-        <button type="submit" name="confirmar_carrito" class="btn btn-success">✅ Confirmar Pedido</button>
+        
+        <button type="submit" name="confirmar_carrito" class="btn btn-success">
+            Confirmar Pedido
+        </button>
       </div>
     </form>
   {% else %}
     <p class="empty">Tu carrito está vacío.</p>
   {% endif %}
 </section>
+
 {% endblock %}
