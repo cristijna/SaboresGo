@@ -226,3 +226,7 @@ def mis_pedidos(request):
     return render(request, 'core/mis_pedidos.html', {
         'pedidos': pedidos
     })
+
+
+def miperfil(request):
+    return render(request, 'core/cliente/miperfil.html')
