@@ -226,3 +226,51 @@ def mis_pedidos(request):
     return render(request, 'core/mis_pedidos.html', {
         'pedidos': pedidos
     })
+
+
+@login_required
+def menusemanal(request):
+    # 1) No permitir proveedores
+    if hasattr(request.user, 'proveedor'):
+        messages.error(request, "Los proveedores no tienen acceso al menú semanal.")
+        return redirect('core:catalogo')
+
+    # 2) Verificar si el usuario es cliente con convenio
+    cliente = getattr(request.user, 'cliente', None)
+
+    if not cliente:
+        messages.error(request, "Este usuario no es un cliente válido.")
+        return redirect('core:catalogo')
+
+    if not cliente.empresa_convenio:
+        messages.error(request, "Necesitas estar vinculado a una empresa convenio para usar el menú semanal.")
+        return redirect('core:catalogo')
+
+    # 3) Cargar o crear menú semanal
+    menu, created = MenuSemanal.objects.get_or_create(cliente=cliente)
+
+    # 4) Obtener todos los items del menú
+    items = ItemMenu.objects.filter(menu=menu).select_related('plato')
+
+    # 5) Estructurar los items en formato por día
+    dias = {
+        'lunes': None,
+        'martes': None,
+        'miercoles': None,
+        'jueves': None,
+        'viernes': None,
+        'sabado': None,
+        'domingo': None
+    }
+
+    for item in items:
+        if item.dia_semana in dias:
+            dias[item.dia_semana] = item
+
+    # 6) Renderizar la plantilla del menú semanal
+    return render(request, 'core/cliente/menusemanal.html', {
+        'menu': menu,
+        'dias': dias,
+        'items': items,
+        'cliente': cliente
+    })
