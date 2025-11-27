@@ -412,3 +412,6 @@ def menu_semanal_select(request, dia):
         "platos": platos,
     }
     return render(request, "cliente/menu_semanal_select.html", context)
+
+def miperfil(request):
+    return render(request, 'core/miperfil.html')

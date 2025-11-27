@@ -1,0 +1,102 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Cargamos el CSS propio de Mi Perfil -->
+<link rel="stylesheet" href="{% static 'core/css/miperfil.css' %}">
+
+<section class="perfil-section">
+
+  <h1 class="perfil-title">Mi Perfil</h1>
+
+  <div class="perfil-layout">
+
+    <!-- Columna izquierda: datos básicos -->
+    <div class="perfil-card">
+      <h2 class="perfil-subtitle">Datos del cliente</h2>
+
+      <div class="perfil-group">
+        <label for="usuario">Usuario</label>
+        <input
+          type="text"
+          id="usuario"
+          value="{{ request.user.username }}"
+          disabled
+        >
+      </div>
+
+      <form method="POST">
+        {% csrf_token %}
+
+        <div class="perfil-group">
+          <label for="direccion">Dirección</label>
+          <input
+            type="text"
+            id="direccion"
+            name="direccion"
+            value="{{ cliente.direccion }}"
+            placeholder="Ingresa tu dirección"
+            required
+          >
+        </div>
+
+        <!-- Columna derecha va dentro del mismo form -->
+        <div class="perfil-card perfil-card-right">
+
+          <h2 class="perfil-subtitle">Convenio</h2>
+
+          <div class="perfil-group">
+            <label for="codigo_convenio">Código de convenio</label>
+            <input
+              type="text"
+              id="codigo_convenio"
+              name="codigo_convenio"
+              placeholder="CODIGO CONVENIO"
+            >
+          </div>
+
+          <div class="perfil-group">
+            <label>Estado del convenio</label>
+            <input
+              type="text"
+              value="{% if cliente.convenio_activo %}Activo{% else %}No activo{% endif %}"
+              disabled
+            >
+          </div>
+
+          <div class="perfil-group">
+            <label>Empresa asociada</label>
+            <input
+              type="text"
+              value="{% if cliente.empresa %}{{ cliente.empresa.nombre }}{% else %}Ninguna{% endif %}"
+              disabled
+            >
+          </div>
+
+          <div class="perfil-group">
+            <label>Saldo disponible</label>
+            <input
+              type="text"
+              value="${{ cliente.saldo_disponible }}"
+              disabled
+            >
+          </div>
+
+        </div>
+
+        <div class="perfil-actions">
+          <button type="submit" class="btn btn-primary">
+            Guardar cambios
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</section>
+
+{% endblock %}

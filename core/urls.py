@@ -34,4 +34,7 @@ urlpatterns = [
 
     # Pedido rápido (1 clic)
     path('pedido/rapido/<int:pk>/', views.pedido_rapido, name='pedido_rapido'),
+
+    # Mi Perfil
+    path('miperfil/', views.miperfil, name='miperfil'),
 ]
