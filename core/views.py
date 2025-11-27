@@ -413,5 +413,6 @@ def menu_semanal_select(request, dia):
     }
     return render(request, "cliente/menu_semanal_select.html", context)
 
+@login_required
 def miperfil(request):
-    return render(request, 'core/miperfil.html')
+    return render(request, 'core/cliente/miperfil.html')
