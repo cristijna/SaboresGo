@@ -4,10 +4,12 @@ from . import views
 app_name = 'core'
 
 urlpatterns = [
-    # Público / Catálogo
     path('', views.catalogo, name='catalogo'),
-    path('plato/<int:pk>/', views.plato_detalle, name='plato_detalle'),
 
+    # Menú semanal (correcto)
+    path('menu-semanal/', views.menu_semanal, name='menu_semanal'),
+
+    path('plato/<int:pk>/', views.plato_detalle, name='plato_detalle'),
     # Autenticación
     path('register/', views.register, name='register'),
     path('login/', views.login_view, name='login'),
@@ -26,7 +28,6 @@ urlpatterns = [
     path('cliente/pedidos/<int:pk>/editar/', views.pedido_edit, name='pedido_edit'),
     path('cliente/pedidos/<int:pk>/eliminar/', views.pedido_delete, name='pedido_delete'),
     path('mis-pedidos/', views.mis_pedidos, name='mis_pedidos'),
-
 
     # Cliente – Pedido Detalle (HISTÓRICO)
     path('cliente/pedidos/<int:pk>/', views.pedido_detalle, name='pedido_detalle'),

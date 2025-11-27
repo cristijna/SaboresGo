@@ -34,7 +34,7 @@
         </a>
       </div>
 
-      <nav class="navbar">
+        <nav class="navbar">
         <ul class="nav-links">
           <li><a href="{% url 'core:catalogo' %}">Inicio</a></li>
           <li><a href="{% url 'core:proveedores' %}">Proveedores</a></li>
@@ -51,6 +51,14 @@
                   <!-- Cliente -->
                   <li><a href="{% url 'core:pedido_list' %}">Carrito</a></li>
                   <li><a href="{% url 'core:mis_pedidos' %}">Mis pedidos</a></li>
+
+                  <!-- NUEVO: MENÚ SEMANAL -->
+                  <li>
+                    <a href="{% url 'core:menu_semanal' %}">
+                      Menú semanal
+                    </a>
+                  </li>
+
               {% endif %}
 
               <li class="user-info">

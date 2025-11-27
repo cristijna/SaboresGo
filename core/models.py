@@ -144,7 +144,7 @@ DIAS_SEMANA = [
 class ItemMenu(models.Model):
     menu = models.ForeignKey(MenuSemanal, on_delete=models.CASCADE, related_name='items')
     plato = models.ForeignKey(Plato, on_delete=models.SET_NULL, null=True, blank=True)
-    dia = models.CharField(max_length=20, choices=DIAS_SEMANA)
+    dia = models.CharField(max_length=20, choices=DIAS_SEMANA, null=True, blank=True)
     hora_colacion = models.TimeField(null=True, blank=True)
     cantidad = models.PositiveIntegerField(default=1)
 

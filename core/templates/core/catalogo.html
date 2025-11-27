@@ -28,6 +28,7 @@
             {% endif %}
           </div>
         </div>
+
         {% if p.descripcion %}
           <p class="proveedor-descripcion">{{ p.descripcion }}</p>
         {% endif %}
@@ -54,14 +55,27 @@
             </a>
 
             {% if user.is_authenticated %}
-              {% if not user.proveedor_profile %}
-                <form method="post" action="{% url 'core:pedido_create' %}" class="pedido-form">
+
+              {% if modo_menu %}
+                <!-- MODO MENÚ SEMANAL -->
+                <form method="post" action="{% url 'menu_semanal_select' dia %}" class="pedido-form">
                   {% csrf_token %}
-                  <input type="hidden" name="plato" value="{{ plato.id }}">
-                  <input type="number" name="cantidad" value="1" min="1" class="pedido-cantidad">
-                  <button type="submit" class="btn btn-primary">Pedir</button>
+                  <input type="hidden" name="plato_id" value="{{ plato.id }}">
+                  <button type="submit" class="btn btn-success">Elegir para menú</button>
                 </form>
+
+              {% else %}
+                <!-- MODO NORMAL -->
+                {% if not user.proveedor_profile %}
+                  <form method="post" action="{% url 'core:pedido_create' %}" class="pedido-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="plato" value="{{ plato.id }}">
+                    <input type="number" name="cantidad" value="1" min="1" class="pedido-cantidad">
+                    <button type="submit" class="btn btn-primary">Pedir</button>
+                  </form>
+                {% endif %}
               {% endif %}
+
             {% else %}
               <a href="{% url 'core:login' %}" class="btn btn-outline">Inicia sesión para pedir</a>
             {% endif %}
@@ -72,7 +86,6 @@
         {% endfor %}
       </div>
 
-      </div>
     </section>
   {% empty %}
     <p class="sin-proveedores">No hay proveedores registrados aún.</p>
