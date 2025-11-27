@@ -6,10 +6,12 @@ app_name = 'core'
 urlpatterns = [
     path('', views.catalogo, name='catalogo'),
 
-    # Menú semanal (correcto)
+    # Menú semanal
     path('menu-semanal/', views.menu_semanal, name='menu_semanal'),
+    path('menu-semanal/select/<str:dia>/', views.menu_semanal_select, name='menu_semanal_select'),
 
     path('plato/<int:pk>/', views.plato_detalle, name='plato_detalle'),
+
     # Autenticación
     path('register/', views.register, name='register'),
     path('login/', views.login_view, name='login'),
@@ -32,7 +34,7 @@ urlpatterns = [
     # Cliente – Pedido Detalle (HISTÓRICO)
     path('cliente/pedidos/<int:pk>/', views.pedido_detalle, name='pedido_detalle'),
 
-    # Pedido rápido (1 clic)
+    # Pedido rápido
     path('pedido/rapido/<int:pk>/', views.pedido_rapido, name='pedido_rapido'),
 
     # Mi Perfil

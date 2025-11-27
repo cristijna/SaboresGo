@@ -1,4 +1,3 @@
-# core/templatetags/core_filters.py
 from django import template
 
 register = template.Library()
@@ -16,3 +15,10 @@ def trim(value):
     if not value:
         return ''
     return value.strip()
+
+@register.filter
+def dict_get(dict_obj, key):
+    """Obtiene dinámicamente dict[key] en templates."""
+    if isinstance(dict_obj, dict):
+        return dict_obj.get(key)
+    return None

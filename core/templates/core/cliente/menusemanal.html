@@ -1,74 +1,44 @@
 {% extends "core/base.html" %}
 {% load static %}
+{% load core_filters %}
 
 {% block content %}
-<div class="container" style="max-width: 900px; margin: auto; padding: 20px;">
+<div class="container mt-4">
+    <div class="card shadow-sm p-4">
+        <h2 class="mb-3">Menú Semanal</h2>
 
-    <h2 style="margin-bottom: 20px;">Menú semanal</h2>
-
-    <!-- Información del cliente -->
-    <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd;">
-        <p><strong>Saldo disponible:</strong> ${{ cliente.empresa.saldo_mensual }}</p>
-        <p><strong>Total del menú:</strong> ${{ menu.total }}</p>
-    </div>
-
-    <!-- Tabla simple de 7 días -->
-    <table style="width: 100%; border-collapse: collapse;">
-        <thead>
-            <tr style="background: #f5f5f5;">
-                <th style="padding: 10px; border: 1px solid #ddd;">Día</th>
-                <th style="padding: 10px; border: 1px solid #ddd;">Plato</th>
-                <th style="padding: 10px; border: 1px solid #ddd;">Opciones</th>
-            </tr>
-        </thead>
-        <tbody>
-
-            {% for dia, nombre in dias_semana %}
-                {% with item=items_por_dia.dia %}
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd; width: 120px;">
-                        {{ nombre }}
-                    </td>
-
-                    <td style="padding: 10px; border: 1px solid #ddd;">
-                        {% if items_por_dia.dia %}
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                {% if items_por_dia.dia.plato.imagen %}
-                                    <img src="{{ items_por_dia.dia.plato.imagen.url }}" 
-                                         alt="Plato" 
-                                         style="width: 70px; height: 70px; object-fit: cover; border-radius: 4px;">
-                                {% endif %}
-
-                                <div>
-                                    <strong>{{ items_por_dia.dia.plato.nombre }}</strong><br>
-                                    <span>${{ items_por_dia.dia.plato.precio }}</span><br>
-                                    <span>Cantidad: {{ items_por_dia.dia.cantidad }}</span>
-                                </div>
-                            </div>
-                        {% else %}
-                            <span style="color: #888;">Sin plato asignado</span>
-                        {% endif %}
-                    </td>
-
-                    <td style="padding: 10px; border: 1px solid #ddd; width: 150px;">
-                        {% if items_por_dia.dia %}
-                            <a href="{% url 'catalogo' %}?modo_menu=true&dia={{ dia }}"
-                               style="padding: 6px 10px; background: #007bff; color: white; text-decoration: none; border-radius: 4px;">
-                                Cambiar
-                            </a>
-                        {% else %}
-                            <a href="{% url 'catalogo' %}?modo_menu=true&dia={{ dia }}"
-                               style="padding: 6px 10px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">
-                                Agregar
-                            </a>
-                        {% endif %}
-                    </td>
+                    <th>Día</th>
+                    <th>Plato</th>
+                    <th>Opciones</th>
                 </tr>
-                {% endwith %}
-            {% endfor %}
+            </thead>
 
-        </tbody>
-    </table>
+            <tbody>
+                {% for d in dias %}
+                    <tr>
+                        <td>{{ d.nombre }}</td>
 
+                        <td>
+                            {% if d.item and d.item.plato %}
+                                {{ d.item.plato.nombre }}
+                            {% else %}
+                                <span class="text-muted">Sin asignar</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a href="{% url 'core:menu_semanal_select' d.key %}"
+                               class="btn btn-primary btn-sm">
+                                Seleccionar plato
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
 {% endblock %}

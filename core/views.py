@@ -5,6 +5,9 @@ from django.contrib import messages
 from .forms import UserRegisterForm, ProveedorProfileForm, LoginForm, PlatoForm, PedidoForm
 from .models import Proveedor, Plato, Pedido, ItemMenu, MenuSemanal, Cliente
 from django.contrib.auth.models import User
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from .models import Plato, MenuSemanal, ItemMenu, Cliente
 
 
 def _is_proveedor(user):
@@ -285,76 +288,12 @@ def mis_pedidos(request):
 
 @login_required
 def menu_semanal(request):
-    # 1) No permitir proveedores
-    if hasattr(request.user, 'proveedor'):
-        messages.error(request, "Los proveedores no tienen acceso al menú semanal.")
-        return redirect('core:catalogo')
-
-    # 2) Verificar si el usuario es cliente con convenio
-    cliente = getattr(request.user, 'cliente', None)
-
-    if not cliente:
-        messages.error(request, "Este usuario no es un cliente válido.")
-        return redirect('core:catalogo')
-
-    if not cliente.empresa:
-        # tu modelo Cliente usa campo 'empresa' según lo definido previamente
-        messages.error(request, "Necesitas estar vinculado a una empresa convenio para usar el menú semanal.")
-        return redirect('core:catalogo')
-
-    # 3) Cargar o crear menú semanal
-    menu, created = MenuSemanal.objects.get_or_create(cliente=cliente)
-
-    # 4) Obtener todos los items del menú
-    items = ItemMenu.objects.filter(menu=menu).select_related('plato')
-
-    # 5) Estructurar los items en formato por día (campo 'dia' en ItemMenu)
-    dias = {
-        'lunes': None,
-        'martes': None,
-        'miercoles': None,
-        'jueves': None,
-        'viernes': None,
-        'sabado': None,
-        'domingo': None
-    }
-
-    for item in items:
-        if item.dia in dias:
-            dias[item.dia] = item
-
-    # 6) Renderizar la plantilla del menú semanal
-    return render(request, 'core/cliente/menusemanal.html', {
-        'menu': menu,
-        'dias': dias,
-        'items': items,
-        'cliente': cliente
-    })
-
-from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib import messages
-from .models import Plato, MenuSemanal, ItemMenu, Cliente
-
-# Vista para seleccionar/asignar un plato a un día concreto
-@login_required
-def menu_semanal_select(request, dia):
-    """
-    dia: string slug esperado: 'lunes', 'martes', ..., 'domingo'
-    GET: muestra listado de platos (template debe recibir 'platos' y 'nombre_dia')
-    POST: asigna el plato seleccionado a ese día en el MenuSemanal del cliente
-    """
-
-    # Validar usuario cliente y convenio
     if not hasattr(request.user, 'cliente'):
         messages.error(request, "Necesitas una cuenta cliente para usar esta función.")
         return redirect('core:catalogo')
 
     cliente = request.user.cliente
-    if not cliente.empresa:
-        messages.error(request, "Necesitas estar vinculado a una empresa convenio para usar el menú semanal.")
-        return redirect('core:catalogo')
 
-    # Validar que 'dia' sea uno de los permitidos
     DIAS = {
         'lunes': 'Lunes',
         'martes': 'Martes',
@@ -364,54 +303,64 @@ def menu_semanal_select(request, dia):
         'sabado': 'Sábado',
         'domingo': 'Domingo',
     }
-    if dia not in DIAS:
-        messages.error(request, "Día inválido.")
-        return redirect('core:menusemanal')  # ajustar nombre de URL si lo tenés distinto
 
-    # Lista de platos a mostrar
-    platos = Plato.objects.all().select_related('proveedor')
+    menu, _ = MenuSemanal.objects.get_or_create(cliente=cliente)
+    items = {i.dia: i for i in menu.items.select_related('plato').all()}
+
+    dias_lista = []
+    for key, nombre in DIAS.items():
+        dias_lista.append({
+            "key": key,
+            "nombre": nombre,
+            "item": items.get(key),
+        })
+
+    return render(request, "core/cliente/menusemanal.html", {
+        "dias": dias_lista,
+    })
+
+
+
+
+@login_required
+def menu_semanal_select(request, dia):
+    if not hasattr(request.user, 'cliente'):
+        messages.error(request, "Usuario no válido.")
+        return redirect('core:catalogo')
+
+    cliente = request.user.cliente
+
+    # Validación de día permitido
+    DIAS_VALIDOS = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo']
+
+    if dia not in DIAS_VALIDOS:
+        messages.error(request, "Día inválido.")
+        return redirect('core:menu_semanal')
+
+    # Cargar menú del cliente
+    menu, _ = MenuSemanal.objects.get_or_create(cliente=cliente)
+
+    # Obtener o crear item para el día
+    item, _ = ItemMenu.objects.get_or_create(menu=menu, dia=dia)
+
+    # Listar platos del proveedor del cliente
+    platos = Plato.objects.all()
+
 
     if request.method == "POST":
-        # Validar existencia del plato
         plato_id = request.POST.get("plato_id")
-        if not plato_id:
-            messages.error(request, "No se recibió el plato seleccionado.")
-            return redirect('menu_semanal_select', dia=dia)  # ajustar nombre/namespace de URL si corresponde
+        item.plato_id = plato_id
+        item.save()
+        messages.success(request, "Plato asignado correctamente.")
+        return redirect("core:menu_semanal")
 
-        try:
-            plato = Plato.objects.get(pk=plato_id)
-        except Plato.DoesNotExist:
-            messages.error(request, "Plato no encontrado.")
-            return redirect('menu_semanal_select', dia=dia)
-
-        # Obtener o crear menú semanal del cliente
-        menu, created = MenuSemanal.objects.get_or_create(cliente=cliente)
-
-        # Si ya existe un Item asignado a ese día, lo actualizamos; si no, lo creamos
-        item, item_created = ItemMenu.objects.update_or_create(
-            menu=menu,
-            dia=dia,
-            defaults={'plato': plato, 'cantidad': 1}
-        )
-
-        # Recalcular total del menú (suma de precio * cantidad)
-        total = 0
-        for it in menu.items.select_related('plato').all():
-            if it.plato:
-                total += (it.plato.precio or 0) * (it.cantidad or 1)
-        menu.total = total
-        menu.save()
-
-        messages.success(request, f"Plato asignado para {DIAS[dia]}.")
-        return redirect('core:menusemanal')  # ajustar si tu nombre de URL es distinto
-
-    # GET -> mostrar la lista de platos para elegir
-    context = {
+    return render(request, "core/cliente/menusemanal_select.html", {
         "dia": dia,
-        "nombre_dia": DIAS[dia],
+        "item": item,
         "platos": platos,
-    }
-    return render(request, "cliente/menu_semanal_select.html", context)
+    })
+
+
 
 @login_required
 def miperfil(request):

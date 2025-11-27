@@ -1,0 +1,45 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container" style="max-width: 1000px; margin: auto; padding: 20px;">
+
+    <h2 style="margin-bottom: 20px;">
+        Seleccionar plato para {{ nombre_dia }}
+    </h2>
+
+    <a href="{% url 'core:menu_semanal' %}">
+       <style="display: inline-block; margin-bottom: 20px; color: #007bff;">
+        ← Volver al menú semanal
+    </a>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 20px;">
+
+        {% for plato in platos %}
+        <div style="border: 1px solid #ddd; padding: 15px; border-radius: 6px;">
+
+            {% if plato.imagen %}
+            <img src="{{ plato.imagen.url }}" 
+                 alt="Imagen plato"
+                 style="width: 100%; height: 150px; object-fit: cover; border-radius: 6px;">
+            {% endif %}
+
+            <h3 style="font-size: 18px; margin-top: 10px;">{{ plato.nombre }}</h3>
+            <p style="margin: 5px 0;">Precio: ${{ plato.precio }}</p>
+
+            <form action="{% url 'core:menu_semanal_select' dia %}" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="plato_id" value="{{ plato.id }}">
+                <button type="submit" 
+                        style="width: 100%; padding: 8px; background: #28a745; color: white; border: none; border-radius: 4px;">
+                    Seleccionar
+                </button>
+            </form>
+
+        </div>
+        {% endfor %}
+
+    </div>
+
+</div>
+{% endblock %}
