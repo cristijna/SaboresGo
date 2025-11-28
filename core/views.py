@@ -364,3 +364,59 @@ def menu_semanal_select(request, dia):
 @login_required
 def miperfil(request):
     return render(request, 'core/cliente/miperfil.html')
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from core.models import Pedido, Proveedor
+
+# PANEL DEL PROVEEDOR (VER SUS PEDIDOS)
+@login_required
+def pedidos_proveedor_panel(request):
+    # Verifica que el usuario sea proveedor
+    if not hasattr(request.user, "proveedor"):
+        return redirect("core:catalogo")
+
+    proveedor = request.user.proveedor
+
+    pedidos = Pedido.objects.filter(
+        plato__proveedor=proveedor
+    ).select_related("cliente", "plato").order_by("-fecha_pedido")
+
+    return render(request, "core/proveedor/pedidos_panel.html", {
+        "pedidos": pedidos,
+        "proveedor": proveedor
+    })
+
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import redirect, get_object_or_404
+from core.models import Pedido, Proveedor
+
+
+@login_required
+def proveedor_cambiar_estado_pedido(request, pedido_id, nuevo_estado):
+    """Permite que el proveedor cambie el estado de sus propios pedidos."""
+
+    # Verificar que el usuario es proveedor
+    try:
+        proveedor = request.user.proveedor
+    except Proveedor.DoesNotExist:
+        return redirect('core:catalogo')  # Cliente no puede hacer esto
+
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+
+    # Asegurar que este pedido pertenece al proveedor
+    if pedido.plato.proveedor != proveedor:
+        return redirect('core:catalogo')
+
+    # Validar estados
+    estados_validos = ['pendiente', 'preparando', 'listo', 'entregado']
+
+    if nuevo_estado not in estados_validos:
+        return redirect('core:pedidos_proveedor_panel')
+
+    pedido.estado = nuevo_estado
+    pedido.save()
+
+    return redirect('core:pedidos_proveedor_panel')
+

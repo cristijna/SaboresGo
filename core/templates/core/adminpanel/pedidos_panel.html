@@ -1,0 +1,81 @@
+{% extends "core/base.html" %}
+{% block title %}Pedidos del proveedor{% endblock %}
+
+{% block extra_css %}
+<style>
+  .estado-btn {
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+    text-decoration: none;
+  }
+  .pendiente { background: #6b7280; }
+  .preparando { background: #2563eb; }
+  .listo { background: #f59e0b; }
+  .entregado { background: #16a34a; }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1>Pedidos recibidos</h1>
+
+<table class="admin-table">
+  <thead>
+    <tr>
+      <th>Cliente</th>
+      <th>Plato</th>
+      <th>Cantidad</th>
+      <th>Total</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+      <th>Fecha</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for p in pedidos %}
+    <tr>
+      <td>{{ p.cliente.user.username }}</td>
+      <td>{{ p.plato.nombre }}</td>
+      <td>{{ p.cantidad }}</td>
+      <td>${{ p.plato.precio|floatformat:0 }}</td>
+
+      <td>{{ p.estado }}</td>
+
+      <td>
+        {% if p.estado == "pendiente" %}
+        <a class="estado-btn pendiente"
+           href="{% url 'core:cambiar_estado_pedido_proveedor' p.id 'preparando' %}">
+          Pendiente → Preparar
+        </a>
+
+        {% elif p.estado == "preparando" %}
+        <a class="estado-btn preparando"
+           href="{% url 'core:cambiar_estado_pedido_proveedor' p.id 'listo' %}">
+          Preparando → Listo
+        </a>
+
+        {% elif p.estado == "listo" %}
+        <a class="estado-btn listo"
+           href="{% url 'core:cambiar_estado_pedido_proveedor' p.id 'entregado' %}">
+          Listo → Entregar
+        </a>
+
+        {% elif p.estado == "entregado" %}
+        <span class="estado-btn entregado">Entregado ✔</span>
+        {% endif %}
+      </td>
+
+      <td>{{ p.fecha_pedido|date:"d/m/Y H:i" }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="7" style="text-align:center;">No hay pedidos registrados.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

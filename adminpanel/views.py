@@ -345,3 +345,20 @@ def cambiar_estado_pedido(request, pedido_id, nuevo_estado):
 
     return redirect(request.META.get('HTTP_REFERER', 'adminpanel:pedidos_list'))
 
+@login_required
+def pedidos_proveedor_panel(request):
+    # Validar que el usuario sea proveedor
+    if not hasattr(request.user, "proveedor"):
+        return redirect("core:catalogo")
+
+    proveedor = request.user.proveedor
+
+    # Filtrar solo pedidos de sus platos
+    pedidos = Pedido.objects.filter(
+        plato__proveedor=proveedor
+    ).select_related("cliente", "plato").order_by("-fecha_pedido")
+
+    return render(request, "core/proveedor/pedidos_panel.html", {
+        "pedidos": pedidos,
+        "proveedor": proveedor
+    })
