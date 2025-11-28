@@ -365,6 +365,9 @@ def menu_semanal_select(request, dia):
 def miperfil(request):
     return render(request, 'core/cliente/miperfil.html')
 
+def repartidores(request):
+    return render(request, 'core/repartidores.html')
+
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from core.models import Pedido, Proveedor
