@@ -63,7 +63,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'saboresdb',
         'USER': 'root',
-        'PASSWORD': 'admin123',
+        'PASSWORD': '12345678',
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
@@ -81,10 +81,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internacionalización
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
-USE_I18N = True
+LANGUAGE_CODE = 'es'
 USE_TZ = True
+TIME_ZONE = 'America/Santiago'
+
+USE_I18N = True
+
 
 # Archivos estáticos
 STATIC_URL = '/static/'
