@@ -183,12 +183,22 @@ def pedido_create(request):
         if form.is_valid():
             pedido = form.save(commit=False)
             pedido.cliente = request.user.cliente
+
+            # *** Punto clave ***
+            pedido.direccion = request.user.cliente.direccion
+
             pedido.save()
             messages.success(request, 'Pedido creado.')
             return redirect('core:pedido_list')
     else:
         form = PedidoForm()
-    return render(request, 'core/cliente/pedido_form.html', {'form': form})
+
+    return render(
+        request,
+        'core/cliente/pedido_form.html',
+        {'form': form}
+    )
+
 
 
 @login_required
@@ -361,9 +371,46 @@ def menu_semanal_select(request, dia):
     })
 
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+
+from core.models import Cliente, CodigoConvenio
+
+
 @login_required
 def miperfil(request):
-    return render(request, 'core/cliente/miperfil.html')
+    cliente = get_object_or_404(Cliente, user=request.user)
+
+    if request.method == "POST":
+        # --- Dirección ---
+        nueva_direccion = request.POST.get("direccion")
+        cliente.direccion = nueva_direccion
+
+        # --- Código de convenio opcional ---
+        codigo_ingresado = request.POST.get("codigo_convenio", "").strip()
+
+        if codigo_ingresado:
+            try:
+                codigo = CodigoConvenio.objects.get(
+                    codigo=codigo_ingresado
+                )
+                # Asocia empresa
+                cliente.empresa = codigo.empresa
+                cliente.convenio_activo = True
+
+            except CodigoConvenio.DoesNotExist:
+                messages.error(request, "El código de convenio no es válido.")
+                return redirect("core:miperfil")
+
+        cliente.save()
+
+        messages.success(request, "Perfil actualizado con éxito.")
+        return redirect("core:miperfil")
+
+    return render(request, "core/cliente/miperfil.html", {"cliente": cliente})
+
+
 
 def repartidores(request):
     return render(request, 'core/repartidores.html')
