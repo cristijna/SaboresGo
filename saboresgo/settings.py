@@ -9,7 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Seguridad
 SECRET_KEY = 'django-insecure-tpp$i7y_-pp%7@-$dnsxiw$ql-9i19+h6=1in7z-5j%7v2s^$&'
 DEBUG = True
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['USER.pythonanywhere.com']
+
 
 # Apps
 INSTALLED_APPS = [
@@ -64,21 +65,27 @@ DATABASES = {
         'NAME': 'saboresdb',
         'USER': 'root',
         'PASSWORD': '12345678',
-        'HOST': 'localhost',
-        'PORT': '3306',
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-        },
+        'HOST': 'saboresgo.mysql.pythonanywhere-services.com'
     }
 }
 
 # Validación de passwords
 AUTH_PASSWORD_VALIDATORS = [
-    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},
-    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 8},
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
+    },
 ]
+
 
 # Internacionalización
 LANGUAGE_CODE = 'es'
@@ -91,6 +98,8 @@ USE_I18N = True
 # Archivos estáticos
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'core', 'static')]
+
+STATIC_ROOT = '/home/saboresgo/SaboresGo/staticfiles'
 
 # Archivos de medios (para subir imágenes)
 MEDIA_URL = '/media/'
