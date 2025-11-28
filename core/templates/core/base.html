@@ -38,7 +38,7 @@
         <ul class="nav-links">
           <li><a href="{% url 'core:catalogo' %}">Inicio</a></li>
           <li><a href="{% url 'core:proveedores' %}">Proveedores</a></li>
-          <li><a href="{% url 'core:miperfil' %}">Mi Perfil</a></li>
+          
 
           {% if user.is_authenticated %}
 
@@ -56,7 +56,7 @@
                   <!-- Cliente -->
                   <li><a href="{% url 'core:pedido_list' %}">Carrito</a></li>
                   <li><a href="{% url 'core:mis_pedidos' %}">Mis pedidos</a></li>
-
+                  <li><a href="{% url 'core:miperfil' %}">Mi Perfil</a></li>
                   <!-- NUEVO: MENÚ SEMANAL -->
                   <li>
                     <a href="{% url 'core:menu_semanal' %}">
