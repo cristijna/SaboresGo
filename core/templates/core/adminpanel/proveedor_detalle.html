@@ -73,6 +73,7 @@
   <thead>
     <tr>
       <th>Cliente</th>
+      <th>Email</th>
       <th>Plato</th>
       <th>Cantidad</th>
       <th>Total</th>
@@ -82,14 +83,26 @@
   <tbody>
     {% for p in pedidos %}
     <tr>
-      <td>{{ p.cliente.username }}</td>
+      <!-- Cliente -->
+      <td>{{ p.cliente.user.username }}</td>
+
+      <!-- Email del cliente -->
+      <td>{{ p.cliente.user.email }}</td>
+
+      <!-- Plato -->
       <td>{{ p.plato.nombre }}</td>
+
+      <!-- Cantidad -->
       <td>{{ p.cantidad }}</td>
-      <td>${{ p.plato.precio }}</td>
+
+      <!-- Total -->
+      <td>${{ p.plato.precio|floatformat:0 }}</td>
+
+      <!-- Fecha -->
       <td>{{ p.fecha_pedido|date:"d/m/Y H:i" }}</td>
     </tr>
     {% empty %}
-      <tr><td colspan="5">No hay pedidos registrados.</td></tr>
+      <tr><td colspan="6">No hay pedidos registrados.</td></tr>
     {% endfor %}
   </tbody>
 </table>

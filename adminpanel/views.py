@@ -220,22 +220,22 @@ def pedidos_list(request):
 @login_required
 @admin_required
 def clientes_list(request):
-    from core.models import Cliente
+    from core.models import Cliente, Pedido
 
-    # Obtener clientes que han hecho pedidos
-    clientes_ids = Pedido.objects.values_list('cliente_id', flat=True).distinct()
-    clientes = Cliente.objects.filter(id__in=clientes_ids)
+    # Obtener todos los clientes del sistema
+    clientes = Cliente.objects.select_related("user").all()
 
-    cliente_data = []
+    data = []
 
     for cliente in clientes:
         pedidos_cliente = Pedido.objects.filter(cliente=cliente)
+
         total_pedidos = pedidos_cliente.count()
         total_gastado = sum([p.plato.precio * p.cantidad for p in pedidos_cliente])
 
         ultimo = pedidos_cliente.order_by('-fecha_pedido').first()
 
-        cliente_data.append({
+        data.append({
             'cliente': cliente,
             'total_pedidos': total_pedidos,
             'total_gastado': total_gastado,
@@ -243,25 +243,25 @@ def clientes_list(request):
         })
 
     return render(request, 'core/adminpanel/clientes_list.html', {
-        'clientes': cliente_data
+        'clientes': data
     })
+
 
 
 @login_required
 @admin_required
 def cliente_detalle(request, cliente_id):
-    from core.models import Cliente
+    from core.models import Cliente, Pedido
 
-    # Obtener cliente correcto
     cliente = get_object_or_404(Cliente, id=cliente_id)
 
-    # Todos los pedidos del cliente
-    pedidos = Pedido.objects.filter(cliente=cliente).select_related('plato', 'plato__proveedor').order_by('-fecha_pedido')
+    pedidos = Pedido.objects.filter(cliente=cliente).select_related(
+        'plato', 'plato__proveedor'
+    ).order_by('-fecha_pedido')
 
-    # Total gastado
     total_gastado = sum([p.plato.precio * p.cantidad for p in pedidos])
 
-    # Top platos más pedidos por este cliente
+    # Top platos más pedidos
     from django.db.models import Sum
     top_platos = (
         pedidos.values('plato__nombre')
@@ -275,6 +275,7 @@ def cliente_detalle(request, cliente_id):
         'total_gastado': total_gastado,
         'top_platos': top_platos,
     })
+
 
 
 @login_required

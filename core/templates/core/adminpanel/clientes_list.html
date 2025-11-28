@@ -63,8 +63,8 @@ a.detalle-link:hover {
   <tbody>
     {% for c in clientes %}
     <tr>
-      <td>{{ c.cliente.username }}</td>
-      <td>{{ c.cliente.email }}</td>
+      <td>{{ c.cliente.user.username }}</td>
+      <td>{{ c.cliente.user.email }}</td>
       <td>{{ c.total_pedidos }}</td>
       <td>${{ c.total_gastado }}</td>
       <td>
@@ -82,7 +82,7 @@ a.detalle-link:hover {
     </tr>
     {% empty %}
     <tr>
-      <td colspan="6" style="text-align:center;">No hay clientes con pedidos registrados.</td>
+      <td colspan="6" style="text-align:center;">No hay clientes registrados.</td>
     </tr>
     {% endfor %}
   </tbody>
