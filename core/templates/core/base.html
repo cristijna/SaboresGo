@@ -39,21 +39,24 @@
           <li><a href="{% url 'core:catalogo' %}">Inicio</a></li>
           <li><a href="{% url 'core:proveedores' %}">Proveedores</a></li>
           <li><a href="{% url 'core:miperfil' %}">Mi Perfil</a></li>
-          <li><a href="{% url 'core:repartidores' %}">Repartidores</a></li>
 
           {% if user.is_authenticated %}
 
               {% if user.is_staff %}
                   <li><a href="{% url 'adminpanel:dashboard' %}">Panel de Administración</a></li>
 
+
               {% elif user.proveedor %}
                   <li><a href="{% url 'core:plato_list' %}">Mis Platos</a></li>
+                  <li><a href="{% url 'core:pedidos_proveedor_panel' %}">Pedidos</a></li>
+
+
 
               {% else %}
                   <!-- Cliente -->
                   <li><a href="{% url 'core:pedido_list' %}">Carrito</a></li>
                   <li><a href="{% url 'core:mis_pedidos' %}">Mis pedidos</a></li>
-
+                  <li><a href="{% url 'core:miperfil' %}">Mi Perfil</a></li>
                   <!-- NUEVO: MENÚ SEMANAL -->
                   <li>
                     <a href="{% url 'core:menu_semanal' %}">
@@ -120,6 +123,7 @@
       }
     });
   </script>
+  {% block extra_js %}{% endblock %}
 
 </body>
 </html>

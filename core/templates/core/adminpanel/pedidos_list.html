@@ -66,7 +66,6 @@
     background: #f3f4f6;
   }
 
-  /* 🔖 ESTADOS */
   .estado-badge {
     padding: 5px 10px;
     border-radius: 8px;
@@ -80,7 +79,6 @@
   .estado-listo         { background: #f59e0b; }
   .estado-entregado     { background: #16a34a; }
 
-  /* 🔘 Botones */
   .btn-small {
     padding: 6px 12px;
     border-radius: 6px;
@@ -94,7 +92,6 @@
   .btn-orange { background: #f59e0b; }
   .btn-green { background: #16a34a; }
 
-  /* 📄 Paginación */
   .pagination {
     margin-top: 20px;
     text-align: center;
@@ -121,7 +118,8 @@
 {% block content %}
 <h1 style="margin-bottom: 20px;">Historial de pedidos</h1>
 
-<!-- FILTROS -->
+<!-- FILTROS — solo para administradores -->
+{% if user.is_superuser %}
 <form method="get" class="filter-box">
   <div>
     <label>Estado</label>
@@ -165,6 +163,7 @@
     <button>Filtrar</button>
   </div>
 </form>
+{% endif %}
 
 <!-- TABLA -->
 <table class="admin-table">
@@ -184,23 +183,13 @@
   <tbody>
     {% for p in pedidos %}
     <tr>
-      <td>{{ p.cliente.username }}</td>
+      <td>{{ p.cliente.user.username }}</td>
       <td>{{ p.plato.nombre }}</td>
       <td>{{ p.plato.proveedor.empresa }}</td>
 
+      <!-- Estado visual -->
       <td>
-        {% if p.estado == "pendiente" %}
-          <span class="estado-badge estado-pendiente">Pendiente</span>
-
-        {% elif p.estado == "preparando" %}
-          <span class="estado-badge estado-preparando">Preparando</span>
-
-        {% elif p.estado == "listo" %}
-          <span class="estado-badge estado-listo">Listo</span>
-
-        {% elif p.estado == "entregado" %}
-          <span class="estado-badge estado-entregado">Entregado</span>
-        {% endif %}
+        <span class="estado-badge estado-{{ p.estado }}">{{ p.estado|capfirst }}</span>
       </td>
 
       <td>{{ p.cantidad }}</td>
@@ -208,31 +197,32 @@
       <td>{{ p.fecha_pedido|date:"d/m/Y H:i" }}</td>
 
       <!-- ⭐ ACCIONES -->
-
       <td>
         {% if p.estado == "pendiente" %}
           <a class="estado-badge estado-pendiente"
-            href="{% url 'adminpanel:cambiar_estado_pedido' p.id 'preparando' %}">
+            href="{% if user.is_superuser %}{% url 'adminpanel:cambiar_estado_pedido' p.id 'preparando' %}
+               {% else %}{% url 'core:proveedor_cambiar_estado_pedido' p.id 'preparando' %}{% endif %}">
             Pendiente → Preparar
           </a>
 
         {% elif p.estado == "preparando" %}
           <a class="estado-badge estado-preparando"
-            href="{% url 'adminpanel:cambiar_estado_pedido' p.id 'listo' %}">
+            href="{% if user.is_superuser %}{% url 'adminpanel:cambiar_estado_pedido' p.id 'listo' %}
+               {% else %}{% url 'core:proveedor_cambiar_estado_pedido' p.id 'listo' %}{% endif %}">
             Preparando → Listo
           </a>
 
         {% elif p.estado == "listo" %}
-          <a class="estado-badge estado-preparando"
-            href="{% url 'adminpanel:cambiar_estado_pedido' p.id 'entregado' %}">
+          <a class="estado-badge estado-listo"
+            href="{% if user.is_superuser %}{% url 'adminpanel:cambiar_estado_pedido' p.id 'entregado' %}
+               {% else %}{% url 'core:proveedor_cambiar_estado_pedido' p.id 'entregado' %}{% endif %}">
             Listo → Entregar
           </a>
 
-        {% elif p.estado == "entregado" %}
+        {% else %}
           <span class="estado-badge estado-entregado">Entregado ✔</span>
         {% endif %}
       </td>
-
 
     </tr>
     {% empty %}

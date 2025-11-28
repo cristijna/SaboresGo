@@ -1,0 +1,42 @@
+{% extends "core/base.html" %}
+
+{% block content %}
+<h1>Pedidos recibidos</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Cliente</th>
+            <th>Plato</th>
+            <th>Cantidad</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acción</th>
+        </tr>
+    </thead>
+
+    <tbody>
+    {% for pedido in pedidos %}
+        <tr>
+            <td>{{ pedido.cliente.username }}</td>
+            <td>{{ pedido.plato.nombre }}</td>
+            <td>{{ pedido.cantidad }}</td>
+            <td>{{ pedido.fecha_pedido|date:"d/m/Y H:i" }}</td>
+            <td>{{ pedido.estado }}</td>
+            <td>
+                {% if pedido.estado == 'pendiente' %}
+                    <a href="{% url 'core:aprobar_pedido_proveedor' pedido.id %}" class="btn btn-success">
+                        Aprobar
+                    </a>
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+        </tr>
+    {% empty %}
+        <tr><td colspan="6">No tienes pedidos aún.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

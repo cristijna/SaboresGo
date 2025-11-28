@@ -351,7 +351,8 @@
           <tbody>
           {% for p in ultimos_pedidos %}
             <tr>
-              <td>{{ p.cliente.username }}</td>
+              <td>{{ p.cliente.user.username }}</td>
+
               <td>{{ p.plato.nombre }}</td>
               <td>{{ p.plato.proveedor.empresa }}</td>
               <td>
