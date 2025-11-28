@@ -5,6 +5,7 @@ from django.db.models import Sum, F
 from django.db.models.functions import TruncDate
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
+from core.models import EmpresaConvenio, CodigoConvenio
 
 from core.models import Pedido, Proveedor
 
@@ -361,4 +362,58 @@ def pedidos_proveedor_panel(request):
     return render(request, "core/proveedor/pedidos_panel.html", {
         "pedidos": pedidos,
         "proveedor": proveedor
+    })
+
+
+
+@login_required
+@admin_required
+def convenios_list(request):
+    empresas = EmpresaConvenio.objects.all()
+    return render(request, 'core/adminpanel/convenios_list.html', {
+        'empresas': empresas
+    })
+
+@login_required
+@admin_required
+def convenios_nuevo(request):
+    if request.method == 'POST':
+        nombre = request.POST.get('nombre')
+        saldo = request.POST.get('saldo')
+
+        EmpresaConvenio.objects.create(
+            nombre=nombre,
+            saldo_mensual=saldo
+        )
+        return redirect('adminpanel:convenios_list')
+
+    return render(request, 'core/adminpanel/convenios_nuevo.html')
+
+@login_required
+@admin_required
+def convenio_codigos(request, id):
+    empresa = get_object_or_404(EmpresaConvenio, id=id)
+    codigos = empresa.codigos.all()
+
+    return render(request, 'core/adminpanel/convenio_codigos.html', {
+        'empresa': empresa,
+        'codigos': codigos
+    })
+
+@login_required
+@admin_required
+def codigos_nuevo(request, id):
+    empresa = get_object_or_404(EmpresaConvenio, id=id)
+
+    if request.method == 'POST':
+        codigo = request.POST.get('codigo')
+
+        CodigoConvenio.objects.create(
+            empresa=empresa,
+            codigo=codigo
+        )
+        return redirect('adminpanel:convenio_codigos', id=empresa.id)
+
+    return render(request, 'core/adminpanel/codigos_nuevo.html', {
+        'empresa': empresa
     })

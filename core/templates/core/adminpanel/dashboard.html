@@ -213,7 +213,17 @@
           Proveedores
         </a>
       </li>
+
+      <li>
+        <a href="{% url 'adminpanel:convenios_list' %}" 
+          class="{% if request.resolver_match.url_name == 'convenios_list' %}active{% endif %}">
+          Convenios
+        </a>
+      </li>
+
+
     </ul>
+
 
   </aside>
 

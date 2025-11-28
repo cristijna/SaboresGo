@@ -8,6 +8,8 @@ from django.contrib.auth.models import User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Plato, MenuSemanal, ItemMenu, Cliente
+from django.utils import timezone
+
 
 
 def _is_proveedor(user):
@@ -298,6 +300,7 @@ def mis_pedidos(request):
 
 @login_required
 def menu_semanal(request):
+    # Solo clientes pueden usar el menú semanal
     if not hasattr(request.user, 'cliente'):
         messages.error(request, "Necesitas una cuenta cliente para usar esta función.")
         return redirect('core:catalogo')
@@ -314,20 +317,46 @@ def menu_semanal(request):
         'domingo': 'Domingo',
     }
 
+    # Obtener o crear el menú del cliente
     menu, _ = MenuSemanal.objects.get_or_create(cliente=cliente)
+
+    # Traer los items del menú
     items = {i.dia: i for i in menu.items.select_related('plato').all()}
 
+    # Preparar datos para el template
     dias_lista = []
+    total = 0
+    cantidad_total = 0
+
     for key, nombre in DIAS.items():
+        item = items.get(key)
+
+        # Si hay plato, se calcula subtotal
+        if item and item.plato:
+            subtotal = item.cantidad * item.plato.precio
+            total += subtotal
+            cantidad_total += item.cantidad
+        else:
+            subtotal = 0
+
         dias_lista.append({
             "key": key,
             "nombre": nombre,
-            "item": items.get(key),
+            "item": item,
+            "subtotal": subtotal,
         })
+
+    # Si tiene convenio, traer su saldo
+    saldo_disponible = cliente.saldo if cliente.empresa else None
 
     return render(request, "core/cliente/menusemanal.html", {
         "dias": dias_lista,
+        "total": total,
+        "cantidad_total": cantidad_total,
+        "saldo_disponible": saldo_disponible,
+        "menu": menu,
     })
+
 
 
 
@@ -378,37 +407,51 @@ from django.shortcuts import render, redirect, get_object_or_404
 from core.models import Cliente, CodigoConvenio
 
 
+# ------------------------
+# MI PERFIL (CLIENTE)
+# ------------------------
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from .models import Cliente, CodigoConvenio
+
 @login_required
-def miperfil(request):
+def mi_perfil(request):
     cliente = get_object_or_404(Cliente, user=request.user)
 
     if request.method == "POST":
-        # --- Dirección ---
-        nueva_direccion = request.POST.get("direccion")
-        cliente.direccion = nueva_direccion
+        # Actualizar dirección
+        cliente.direccion = request.POST.get("direccion")
 
-        # --- Código de convenio opcional ---
-        codigo_ingresado = request.POST.get("codigo_convenio", "").strip()
+        # Código de convenio ingresado
+        codigo_ingresado = request.POST.get("codigo_convenio")
 
         if codigo_ingresado:
             try:
-                codigo = CodigoConvenio.objects.get(
-                    codigo=codigo_ingresado
-                )
-                # Asocia empresa
+                codigo = CodigoConvenio.objects.get(codigo=codigo_ingresado, usado=False)
+
+                # Vincular empresa al cliente
                 cliente.empresa = codigo.empresa
-                cliente.convenio_activo = True
+                cliente.saldo = codigo.empresa.saldo_mensual
+                cliente.fecha_ultimo_reset = timezone.now().date()
+
+                # Marcar el código como usado
+                codigo.usado = True
+                codigo.save()
+
+                messages.success(request, "Convenio vinculado correctamente.")
 
             except CodigoConvenio.DoesNotExist:
-                messages.error(request, "El código de convenio no es válido.")
-                return redirect("core:miperfil")
+                messages.error(request, "El código no existe o ya fue usado.")
 
         cliente.save()
-
-        messages.success(request, "Perfil actualizado con éxito.")
         return redirect("core:miperfil")
 
-    return render(request, "core/cliente/miperfil.html", {"cliente": cliente})
+    return render(request, "core/miperfil.html", {
+        "cliente": cliente
+    })
+
+
+
 
 
 
@@ -469,4 +512,60 @@ def proveedor_cambiar_estado_pedido(request, pedido_id, nuevo_estado):
     pedido.save()
 
     return redirect('core:pedidos_proveedor_panel')
+
+@login_required
+def set_convenio(request):
+    if request.method == 'POST':
+        codigo = request.POST.get('codigo')
+
+        try:
+            cod = CodigoConvenio.objects.get(codigo=codigo)
+        except CodigoConvenio.DoesNotExist:
+            messages.error(request, 'El código ingresado no existe.')
+            return redirect('core:miperfil')
+
+        # Vincular cliente
+        cliente = request.user.cliente
+        cliente.empresa = cod.empresa
+        cliente.saldo = cod.empresa.saldo_mensual
+        cliente.save()
+
+        messages.success(request, f"Te has vinculado a la empresa {cod.empresa.nombre}.")
+        return redirect('core:miperfil')
+
+
+@login_required
+def pagar_menu(request, menu_id):
+    # Validar que el menú sea del cliente actual
+    menu = get_object_or_404(MenuSemanal, id=menu_id, cliente=request.user.cliente)
+
+    # Calcular total del menú
+    total = sum(
+        item.cantidad * item.plato.precio
+        for item in menu.items.select_related("plato").all()
+        if item.plato
+    )
+
+    cliente = request.user.cliente
+
+    # Validar convenio
+    if not cliente.empresa:
+        messages.error(request, "No tienes un convenio activo para usar saldo.")
+        return redirect('core:menu_semanal')
+
+    # Validar saldo suficiente
+    if cliente.saldo < total:
+        messages.error(request, "No tienes saldo suficiente para pagar este menú.")
+        return redirect('core:menu_semanal')
+
+    # Realizar el pago
+    cliente.saldo -= total
+    cliente.save()
+
+    # Marcar menú como pagado
+    menu.pagado = True
+    menu.save()
+
+    messages.success(request, f"Pago exitoso. Se descontaron ${total} de tu saldo.")
+    return redirect('core:menu_semanal')
 

@@ -59,11 +59,13 @@ class EmpresaConvenio(models.Model):
 # CODIGO CONVENIO (SIN INDICADOR DE “USADO”)
 # ---------------------------------------------------------
 class CodigoConvenio(models.Model):
-    empresa = models.ForeignKey(EmpresaConvenio, on_delete=models.CASCADE, related_name='codigos')
-    codigo = models.CharField(max_length=50, unique=True)
+    empresa = models.ForeignKey(EmpresaConvenio, on_delete=models.CASCADE, related_name="codigos")
+    codigo = models.CharField(max_length=100, unique=True)
+    usado = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{self.codigo} - {self.empresa.nombre}'
+        return f"{self.codigo} - {self.empresa.nombre}"
+
 
 
 

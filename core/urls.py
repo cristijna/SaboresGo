@@ -9,6 +9,8 @@ urlpatterns = [
     # Menú semanal
     path('menu-semanal/', views.menu_semanal, name='menu_semanal'),
     path('menu-semanal/select/<str:dia>/', views.menu_semanal_select, name='menu_semanal_select'),
+    path('menu-semanal/pagar/<int:menu_id>/', views.pagar_menu, name='pagar_menu'),
+    path('menu/pagar/<int:menu_id>/', views.pagar_menu, name='pagar_menu'),
 
     path('plato/<int:pk>/', views.plato_detalle, name='plato_detalle'),
 
@@ -24,11 +26,10 @@ urlpatterns = [
     path('proveedor/platos/<int:pk>/editar/', views.plato_edit, name='plato_edit'),
     path('proveedor/platos/<int:pk>/eliminar/', views.plato_delete, name='plato_delete'),
     path('proveedor/pedidos-panel/', views.pedidos_proveedor_panel, name='pedidos_proveedor_panel'),
-    path(
-    'proveedor/pedido/<int:pedido_id>/estado/<str:nuevo_estado>/',
-    views.proveedor_cambiar_estado_pedido,
-    name='proveedor_cambiar_estado_pedido'
-),
+    path('proveedor/pedido/<int:pedido_id>/estado/<str:nuevo_estado>/', 
+        views.proveedor_cambiar_estado_pedido, 
+        name='proveedor_cambiar_estado_pedido'),
+
 
 
 
@@ -46,7 +47,10 @@ urlpatterns = [
     path('pedido/rapido/<int:pk>/', views.pedido_rapido, name='pedido_rapido'),
 
     # Mi Perfil
-    path('miperfil/', views.miperfil, name='miperfil'),
+    path('miperfil/', views.mi_perfil, name='miperfil'),
+
+    path('mi-perfil/set-convenio/', views.set_convenio, name='set_convenio'),
+
     
     #Repartidores
     path('repartidores/', views.repartidores, name='repartidores'),

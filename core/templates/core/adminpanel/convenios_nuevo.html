@@ -1,0 +1,24 @@
+{% extends "core/adminpanel/panel.html" %}
+{% block title %}Nueva Empresa{% endblock %}
+
+{% block admin_content %}
+<h1>Crear nueva empresa convenio</h1>
+
+<form method="POST">
+    {% csrf_token %}
+
+    <div class="perfil-group">
+        <label>Nombre de la empresa</label>
+        <input type="text" name="nombre" required>
+    </div>
+
+    <div class="perfil-group">
+        <label>Saldo mensual ($)</label>
+        <input type="number" name="saldo" required>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Crear empresa</button>
+</form>
+
+<a href="{% url 'adminpanel:convenios_list' %}" class="back-link">← Volver</a>
+{% endblock %}

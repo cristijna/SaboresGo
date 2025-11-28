@@ -1,0 +1,18 @@
+{% extends "core/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<section class="admin-layout">
+  
+  <!-- 🔹 Sidebar -->
+
+  <!-- 🔹 Contenido principal dinámico -->
+  <div class="admin-main">
+      {% block admin_content %}
+      {% endblock %}
+  </div>
+
+</section>
+
+{% endblock %}

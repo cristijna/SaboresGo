@@ -38,10 +38,10 @@
         <ul class="nav-links">
           <li><a href="{% url 'core:catalogo' %}">Inicio</a></li>
           <li><a href="{% url 'core:proveedores' %}">Proveedores</a></li>
-          <li><a href="{% url 'core:miperfil' %}">Mi Perfil</a></li>
+          
 
           {% if user.is_authenticated %}
-
+            
               {% if user.is_staff %}
                   <li><a href="{% url 'adminpanel:dashboard' %}">Panel de Administración</a></li>
 

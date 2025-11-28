@@ -3,92 +3,95 @@
 
 {% block content %}
 
-<!-- Cargamos el CSS propio de Mi Perfil -->
 <link rel="stylesheet" href="{% static 'core/css/miperfil.css' %}">
 
 <section class="perfil-section">
 
   <h1 class="perfil-title">Mi Perfil</h1>
+  {% if messages %}
+  <div class="alert-container">
+      {% for message in messages %}
+          <div class="alert {% if message.tags %}alert-{{ message.tags }}{% endif %}">
+              {{ message }}
+          </div>
+      {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if mensaje_exito %}
+  <div class="alert alert-success" style="margin-top:15px;">
+    {{ mensaje_exito }}
+  </div>
+  {% endif %}
+
+  {% if mensaje_error %}
+  <div class="alert alert-danger" style="margin-top:15px;">
+    {{ mensaje_error }}
+  </div>
+  {% endif %}
 
   <div class="perfil-layout">
 
-    <!-- Columna izquierda: datos básicos -->
     <div class="perfil-card">
+
       <h2 class="perfil-subtitle">Datos del cliente</h2>
 
       <div class="perfil-group">
-        <label for="usuario">Usuario</label>
-        <input
-          type="text"
-          id="usuario"
-          value="{{ request.user.username }}"
-          disabled
-        >
+        <label>Usuario</label>
+        <input type="text" value="{{ request.user.username }}" disabled>
       </div>
 
-      <form method="POST">
+      <form method="POST" action="{% url 'core:miperfil' %}">
         {% csrf_token %}
 
         <div class="perfil-group">
-          <label for="direccion">Dirección</label>
+          <label>Dirección</label>
           <input
             type="text"
-            id="direccion"
             name="direccion"
             value="{{ cliente.direccion }}"
-            placeholder="Ingresa tu dirección"
             required
           >
         </div>
 
-        <!-- Columna derecha va dentro del mismo form -->
-        <div class="perfil-card perfil-card-right">
+        <hr>
 
-          <h2 class="perfil-subtitle">Convenio</h2>
+        <h2 class="perfil-subtitle">Convenio</h2>
 
-          <div class="perfil-group">
-            <label for="codigo_convenio">Código de convenio</label>
-            <input
-              type="text"
-              id="codigo_convenio"
-              name="codigo_convenio"
-              placeholder="CODIGO CONVENIO"
-            >
-          </div>
+        <div class="perfil-group">
+          <label>Código de convenio</label>
+          <input type="text" name="codigo_convenio" placeholder="Ingresa el código">
+        </div>
 
-          <div class="perfil-group">
-            <label>Estado del convenio</label>
-            <input
-              type="text"
-              value="{% if cliente.convenio_activo %}Activo{% else %}No activo{% endif %}"
-              disabled
-            >
-          </div>
+        <div class="perfil-group">
+          <label>Estado del convenio</label>
+          <input
+            type="text"
+            value="{% if cliente.empresa %}Activo{% else %}No activo{% endif %}"
+            disabled
+          >
+        </div>
 
-          <div class="perfil-group">
-            <label>Empresa asociada</label>
-            <input
-              type="text"
-              value="{% if cliente.empresa %}{{ cliente.empresa.nombre }}{% else %}Ninguna{% endif %}"
-              disabled
-            >
-          </div>
+        <div class="perfil-group">
+          <label>Empresa asociada</label>
+          <input
+            type="text"
+            value="{% if cliente.empresa %}{{ cliente.empresa.nombre }}{% else %}Ninguna{% endif %}"
+            disabled
+          >
+        </div>
 
-          <div class="perfil-group">
-            <label>Saldo disponible</label>
-            <input
-              type="text"
-              value="${{ cliente.saldo_disponible }}"
-              disabled
-            >
-          </div>
-
+        <div class="perfil-group">
+          <label>Saldo disponible</label>
+          <input
+            type="text"
+            value="{% if cliente.empresa %}${{ cliente.saldo }}{% else %}---{% endif %}"
+            disabled
+          >
         </div>
 
         <div class="perfil-actions">
-          <button type="submit" class="btn btn-primary">
-            Guardar cambios
-          </button>
+          <button type="submit" class="btn btn-primary">Guardar cambios</button>
         </div>
 
       </form>

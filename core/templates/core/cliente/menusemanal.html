@@ -2,43 +2,211 @@
 {% load static %}
 {% load core_filters %}
 
+{% block extra_css %}
+<style>
+/* ================================
+   CONTENEDOR PRINCIPAL
+================================ */
+.menu-semanal-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+    border: 1px solid #e5e7eb;
+}
+
+/* ================================
+   TÍTULO
+================================ */
+.menu-title {
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #1f2937;
+}
+
+/* ================================
+   TABLA
+================================ */
+.menu-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    margin-bottom: 25px;
+}
+
+.menu-table thead {
+    background: #f9fafb;
+}
+
+.menu-table th,
+.menu-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.menu-table th {
+    font-weight: 600;
+    color: #374151;
+}
+
+.menu-table td {
+    color: #4b5563;
+}
+
+/* alternar filas */
+.menu-table tbody tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+/* ================================
+   BOTÓN SELECCIONAR PLATO
+================================ */
+.btn-select {
+    background: #f97316;
+    color: #ffffff;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.btn-select:hover {
+    background: #ea580c;
+}
+
+/* ================================
+   RESUMEN
+================================ */
+.resumen-box {
+    background: #f3f4f6;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+/* ================================
+   SALDO
+================================ */
+.saldo-box {
+    background: #e8f8ef;
+    border-left: 4px solid #16a34a;
+    padding: 12px 16px;
+    border-radius: 6px;
+    margin: 18px 0;
+}
+
+.saldo-box strong {
+    color: #166534;
+}
+
+/* BOTÓN PAGAR */
+.btn-pagar {
+    background: #16a34a;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-pagar:hover {
+    background: #15803d;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mt-4">
-    <div class="card shadow-sm p-4">
-        <h2 class="mb-3">Menú Semanal</h2>
+    <div class="menu-semanal-card">
 
-        <table class="table table-striped">
+        <h2 class="menu-title">Menú Semanal</h2>
+
+        <!-- =======================
+             TABLA DEL MENÚ
+        ======================== -->
+        <table class="menu-table">
             <thead>
                 <tr>
                     <th>Día</th>
                     <th>Plato</th>
+                    <th>Precio</th>
                     <th>Opciones</th>
                 </tr>
             </thead>
-
             <tbody>
                 {% for d in dias %}
-                    <tr>
-                        <td>{{ d.nombre }}</td>
+                <tr>
+                    <td>{{ d.nombre }}</td>
 
-                        <td>
-                            {% if d.item and d.item.plato %}
-                                {{ d.item.plato.nombre }}
-                            {% else %}
-                                <span class="text-muted">Sin asignar</span>
-                            {% endif %}
-                        </td>
+                    <td>
+                        {% if d.item and d.item.plato %}
+                            {{ d.item.plato.nombre }}
+                        {% else %}
+                            <span class="text-muted">Sin asignar</span>
+                        {% endif %}
+                    </td>
 
-                        <td>
-                            <a href="{% url 'core:menu_semanal_select' d.key %}"
-                               class="btn btn-primary btn-sm">
-                                Seleccionar plato
-                            </a>
-                        </td>
-                    </tr>
+                    <td>
+                        {% if d.item and d.item.plato %}
+                            ${{ d.item.plato.precio|floatformat:0 }}
+                        {% else %}
+                            ---
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a href="{% url 'core:menu_semanal_select' d.key %}"
+                           class="btn-select">
+                           Seleccionar plato
+                        </a>
+                    </td>
+                </tr>
                 {% endfor %}
             </tbody>
         </table>
+
+        <!-- =======================
+             RESUMEN DEL MENÚ
+        ======================== -->
+        <div class="resumen-box">
+
+            <h4>Resumen del menú</h4>
+
+            <p><strong>Total de platos:</strong> {{ cantidad_total }}</p>
+            <p><strong>Total a pagar:</strong> ${{ total|floatformat:0 }}</p>
+
+            {% if user.cliente.empresa %}
+            
+            <!-- SALDO -->
+            <div class="saldo-box">
+                <strong>💰 Saldo disponible:</strong>
+                <span style="color:#16a34a; font-weight:bold;">
+                    ${{ user.cliente.saldo|floatformat:0 }}
+                </span>
+            </div>
+
+            {% if total > user.cliente.saldo %}
+                <p class="text-danger">Saldo insuficiente para pagar el menú.</p>
+            {% else %}
+                <form method="post" action="{% url 'core:pagar_menu' menu.id %}">
+                    {% csrf_token %}
+                    <button class="btn-pagar">Pagar con saldo del convenio</button>
+                </form>
+            {% endif %}
+
+            {% else %}
+            <p class="text-warning mt-3">
+                No estás asociado a ningún convenio.
+                Puedes ingresar un código desde <a href="{% url 'core:miperfil' %}">Mi Perfil</a>.
+            </p>
+            {% endif %}
+
+        </div>
+
     </div>
 </div>
 {% endblock %}

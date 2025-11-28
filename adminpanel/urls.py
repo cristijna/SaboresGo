@@ -16,6 +16,12 @@ urlpatterns = [
      views.cambiar_estado_pedido, 
      name='cambiar_estado_pedido'),
 
+    path('convenios/', views.convenios_list, name='convenios_list'),
+    path('convenios/nuevo/', views.convenios_nuevo, name='convenios_nuevo'),
+    path('convenios/<int:id>/codigos/', views.convenio_codigos, name='convenio_codigos'),
+    path('convenios/<int:id>/codigos/nuevo/', views.codigos_nuevo, name='codigos_nuevo'),
+
+
 ]
 
 

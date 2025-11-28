@@ -1,0 +1,117 @@
+{% extends "core/adminpanel/panel.html" %}
+{% block title %}Convenios{% endblock %}
+{% block extra_css %}
+<style>
+
+    /* ===== TÍTULO ===== */
+    h1 {
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #1f2937;
+    }
+
+    .admin-subtitle {
+        color: #6b7280;
+        margin-bottom: 20px;
+        font-size: 0.95rem;
+    }
+
+    /* ===== BOTÓN NUEVA EMPRESA ===== */
+    .btn.btn-primary {
+        background: #f97316;
+        border: none;
+        padding: 10px 16px;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        color: white;
+        cursor: pointer;
+        transition: 0.2s;
+        text-decoration: none;
+    }
+
+    .btn.btn-primary:hover {
+        background: #ea580c;
+    }
+
+    /* ===== TABLA ===== */
+    table.admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        font-size: 0.95rem;
+    }
+
+    table.admin-table th {
+        background: #f3f4f6;
+        padding: 12px;
+        text-align: left;
+        color: #374151;
+        font-weight: 600;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    table.admin-table td {
+        padding: 12px;
+        border-bottom: 1px solid #f1f1f1;
+        color: #374151;
+    }
+
+    table.admin-table tr:hover {
+        background: #f9fafb;
+    }
+
+    /* ===== ENLACE VER CÓDIGOS ===== */
+    .detalle-link {
+        text-decoration: none;
+        color: #2563eb;
+        font-weight: 500;
+        transition: 0.2s;
+    }
+
+    .detalle-link:hover {
+        color: #1e40af;
+        text-decoration: underline;
+    }
+
+</style>
+{% endblock %}
+
+{% block admin_content %}
+<h1>Empresas con convenio</h1>
+<p class="admin-subtitle">Gestiona empresas, códigos y saldos.</p>
+
+<div style="margin: 15px 0;">
+    <a href="{% url 'adminpanel:convenios_nuevo' %}" class="btn btn-primary">+ Nueva Empresa</a>
+</div>
+
+<table class="admin-table">
+    <thead>
+        <tr>
+            <th>Empresa</th>
+            <th>Saldo mensual</th>
+            <th>Códigos activos</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for e in empresas %}
+        <tr>
+            <td>{{ e.nombre }}</td>
+            <td>${{ e.saldo_mensual }}</td>
+            <td>{{ e.codigos.count }}</td>
+            <td>
+                <a href="{% url 'adminpanel:convenio_codigos' e.id %}" class="detalle-link">Ver códigos →</a>
+            </td>
+        </tr>
+    {% empty %}
+        <tr>
+            <td colspan="4" style="text-align:center;">No hay empresas registradas.</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
