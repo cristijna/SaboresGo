@@ -23,6 +23,14 @@ urlpatterns = [
     path('proveedor/platos/crear/', views.plato_create, name='plato_create'),
     path('proveedor/platos/<int:pk>/editar/', views.plato_edit, name='plato_edit'),
     path('proveedor/platos/<int:pk>/eliminar/', views.plato_delete, name='plato_delete'),
+    path('proveedor/pedidos-panel/', views.pedidos_proveedor_panel, name='pedidos_proveedor_panel'),
+    path(
+    'proveedor/pedido/<int:pedido_id>/estado/<str:nuevo_estado>/',
+    views.proveedor_cambiar_estado_pedido,
+    name='proveedor_cambiar_estado_pedido'
+),
+
+
 
     # Cliente – Pedidos (Carrito)
     path('cliente/pedidos/', views.pedido_list, name='pedido_list'),

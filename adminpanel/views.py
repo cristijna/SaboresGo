@@ -62,22 +62,35 @@ def dashboard(request):
     # -----------------------------
     # 4) VENTAS ÚLTIMOS 7 DÍAS (gráfico)
     # -----------------------------
+    # 4) VENTAS ÚLTIMOS 7 DÍAS (gráfico)
+    hoy = timezone.localdate()
     hace_7_dias = hoy - timedelta(days=6)
 
-    ventas_por_dia_qs = (
-        pedidos_confirmados
+    # Crear rango fijo de 7 días
+    dias_dict = {
+        (hace_7_dias + timedelta(days=i)): 0
+        for i in range(7)
+    }
+
+    ventas = (
+        Pedido.objects.filter(confirmado=True)
         .filter(fecha_pedido__date__gte=hace_7_dias)
         .annotate(dia=TruncDate('fecha_pedido'))
         .values('dia')
         .annotate(total=Sum(F('plato__precio') * F('cantidad')))
-        .order_by('dia')
     )
 
-    labels_dias = []
-    data_dias = []
-    for item in ventas_por_dia_qs:
-        labels_dias.append(item['dia'].strftime('%d/%m'))
-        data_dias.append(float(item['total'] or 0))
+    # Llenar datos reales
+    for v in ventas:
+        dia = v['dia']
+        if dia in dias_dict:
+            dias_dict[dia] = float(v['total'])
+
+    # Preparar arrays para el gráfico
+    labels_dias = [d.strftime("%d/%m") for d in dias_dict.keys()]
+    data_dias = list(dias_dict.values())
+
+
 
     # -----------------------------
     # 5) TOP 5 PLATOS MÁS VENDIDOS
@@ -207,23 +220,18 @@ def pedidos_list(request):
 @login_required
 @admin_required
 def clientes_list(request):
-    # Buscar clientes únicos desde los pedidos
-    from django.contrib.auth import get_user_model
-    User = get_user_model()
+    from core.models import Cliente
 
-    # Obtener usuarios que hayan hecho al menos un pedido
+    # Obtener clientes que han hecho pedidos
     clientes_ids = Pedido.objects.values_list('cliente_id', flat=True).distinct()
-    clientes = User.objects.filter(id__in=clientes_ids)
+    clientes = Cliente.objects.filter(id__in=clientes_ids)
 
     cliente_data = []
 
     for cliente in clientes:
         pedidos_cliente = Pedido.objects.filter(cliente=cliente)
         total_pedidos = pedidos_cliente.count()
-        total_gastado = 0
-
-        for p in pedidos_cliente:
-            total_gastado += (p.plato.precio * p.cantidad)
+        total_gastado = sum([p.plato.precio * p.cantidad for p in pedidos_cliente])
 
         ultimo = pedidos_cliente.order_by('-fecha_pedido').first()
 
@@ -242,12 +250,15 @@ def clientes_list(request):
 @login_required
 @admin_required
 def cliente_detalle(request, cliente_id):
-    from django.contrib.auth import get_user_model
-    User = get_user_model()
+    from core.models import Cliente
 
-    cliente = get_object_or_404(User, id=cliente_id)
+    # Obtener cliente correcto
+    cliente = get_object_or_404(Cliente, id=cliente_id)
+
+    # Todos los pedidos del cliente
     pedidos = Pedido.objects.filter(cliente=cliente).select_related('plato', 'plato__proveedor').order_by('-fecha_pedido')
 
+    # Total gastado
     total_gastado = sum([p.plato.precio * p.cantidad for p in pedidos])
 
     # Top platos más pedidos por este cliente
@@ -264,6 +275,7 @@ def cliente_detalle(request, cliente_id):
         'total_gastado': total_gastado,
         'top_platos': top_platos,
     })
+
 
 @login_required
 @admin_required
@@ -320,15 +332,15 @@ def proveedor_detalle(request, proveedor_id):
 
 
 @login_required
-@admin_required
 def cambiar_estado_pedido(request, pedido_id, nuevo_estado):
     pedido = get_object_or_404(Pedido, id=pedido_id)
 
-    # permitir los 4 estados
-    if nuevo_estado not in ['pendiente', 'preparando', 'listo', 'entregado']:
-        return redirect('adminpanel:pedidos_list')
+    # si pasa de pendiente → preparando, entonces se confirma
+    if pedido.estado == "pendiente" and nuevo_estado == "preparando":
+        pedido.confirmado = True
 
     pedido.estado = nuevo_estado
     pedido.save()
 
     return redirect(request.META.get('HTTP_REFERER', 'adminpanel:pedidos_list'))
+

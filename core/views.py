@@ -365,3 +365,47 @@ def menu_semanal_select(request, dia):
 @login_required
 def miperfil(request):
     return render(request, 'core/cliente/miperfil.html')
+
+
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect, get_object_or_404
+from core.models import Pedido, Proveedor
+
+
+@login_required
+def pedidos_proveedor_panel(request):
+    # Obtener el proveedor del usuario
+    proveedor = get_object_or_404(Proveedor, user=request.user)
+
+    # Filtrar SOLO los pedidos de ese proveedor
+    pedidos = Pedido.objects.filter(
+        plato__proveedor=proveedor
+    ).select_related('plato', 'cliente').order_by('-fecha_pedido')
+
+    return render(request, 'core/adminpanel/pedidos_list.html', {
+        'pedidos': pedidos,
+        'proveedores': [proveedor],  # Para que no falle el template del admin
+        'estado': "",
+        'cliente': "",
+        'proveedor_selected': proveedor.id,
+        'fecha_inicio': "",
+        'fecha_fin': "",
+    })
+
+
+@login_required
+def proveedor_cambiar_estado_pedido(request, pedido_id, nuevo_estado):
+    proveedor = get_object_or_404(Proveedor, user=request.user)
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+
+    # Seguridad: el pedido debe ser de este proveedor
+    if pedido.plato.proveedor != proveedor:
+        return redirect('core:pedidos_proveedor_panel')
+
+    if nuevo_estado not in ['pendiente', 'preparando', 'listo', 'entregado']:
+        return redirect('core:pedidos_proveedor_panel')
+
+    pedido.estado = nuevo_estado
+    pedido.save()
+
+    return redirect(request.META.get('HTTP_REFERER', 'core:pedidos_proveedor_panel'))
