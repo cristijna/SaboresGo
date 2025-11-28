@@ -1,0 +1,48 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}Repartidores{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'core/css/repartidores.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="catalogo repartidores-section">
+  <header class="catalogo-header">
+    <h1>Repartidores</h1>
+
+    <p class="subtitulo">
+      ¡Únete a nuestro equipo! 🚴‍♂️❤️  
+      Buscamos repartidores con energía y con ganas de querer formar parte de una comunidad dedicada a llevar sabor, rapidez y una experiencia increíble a cada cliente.  
+      Tendrás horarios flexibles, un ambiente amigable, apoyo constante y la oportunidad de crecer con nosotros mientras repartes sonrisas y platos deliciosos por toda la ciudad.  
+      ¿Te animas a ser parte del cambio? ¡Te estamos esperando!
+    </p>
+  </header>
+
+  <ul class="beneficios-lista">
+      <li>🚀 Horarios flexibles para que trabajes a tu ritmo.</li>
+      <li>💸 Pagos puntuales todas las semanas.</li>
+      <li>🎧 Equipo amigable y apoyo constante.</li>
+      <li>🍽️ Descuentos especiales en nuestros productos.</li>
+      <li>⛽ Bonificaciones por desempeño.</li>
+      <li>⭐ Oportunidades reales de crecimiento.</li>
+  </ul>
+
+  <div class="repartidores-cta">
+    <a href="/contacto/" class="btn-contacto">CONTACTANOS</a>
+
+    <div class="descargas">
+        <a href="#" class="store-btn">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/App_Store_%28iOS%29.svg/2048px-App_Store_%28iOS%29.svg.png" alt="App Store">
+        </a>
+        <a href="#" class="store-btn">
+            <img src="https://static.vecteezy.com/system/resources/previews/022/613/026/non_2x/google-play-store-icon-logo-symbol-free-png.png" alt="Google Play">
+        </a>
+    </div>
+  </div>
+
+</section>
+
+{% endblock %}

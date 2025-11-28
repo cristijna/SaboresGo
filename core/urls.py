@@ -39,4 +39,7 @@ urlpatterns = [
 
     # Mi Perfil
     path('miperfil/', views.miperfil, name='miperfil'),
+    
+    #Repartidores
+    path('repartidores/', views.repartidores, name='repartidores'),
 ]

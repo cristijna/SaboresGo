@@ -361,7 +361,10 @@ def menu_semanal_select(request, dia):
     })
 
 
-
 @login_required
 def miperfil(request):
     return render(request, 'core/cliente/miperfil.html')
+
+@login_required
+def repartidores(request):
+    return render(request, 'core/repartidores.html')
